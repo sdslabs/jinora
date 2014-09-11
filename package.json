@@ -1,0 +1,32 @@
+{
+  "name": "jinora",
+  "version": "0.0.1",
+  "description": "Jinora is a public chat application for a slack team that lets anonymous users talk to the entire team.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:captn3m0/jinora.git"
+  },
+  "keywords": [
+    "jinora",
+    "slack",
+    "chat",
+    "olark",
+    "public",
+    "chat"
+  ],
+  "author": "Abhay Rana <me@captnemo.in>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/captn3m0/jinora/issues"
+  },
+  "homepage": "https://github.com/captn3m0/jinora",
+  "dependencies": {
+    "coffee-script": "^1.8.0",
+    "dotenv": "^0.4.0",
+    "express.io": "^1.1.13"
+  }
+}

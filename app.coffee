@@ -1,4 +1,3 @@
-
 # First task is to setup environment
 if process.env.NODE_ENV != 'production'
   dotenv = require 'dotenv'
@@ -37,4 +36,4 @@ app.io.route 'chat:msg', (req)->
 app.get "/", (req, res) ->
   res.sendfile "index.html"
 
-app.listen 3000
+app.listen process.env.PORT

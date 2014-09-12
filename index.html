@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Slate</title>
+    <title>chat with sdslabs</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <link rel="stylesheet" href="style.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
   </head>
   <body>
 
@@ -17,13 +18,12 @@
 
       <div id="content">
         <div id="channels">
-          <div class="channel">
-            <h2>chat with sdslabs</h2>
+          <div class="channel focused">
+            <h2>chat</h2>
 
             <div class="channel-log">
-              <table>
+              <table class="">
                 <tbody>
-                  
                 </tbody>
               </table>
             </div>
@@ -33,6 +33,15 @@
 
       <textarea id="message-input" placeholder="Message"></textarea>
     </div>
-
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="dot.min.js"></script>
+    <script src="app.js"></script>
+    <script id="template-message" type="text/x-dot-template">
+      <tr class="{{=it.classes}}">
+        <td class="nick"><span>{{=it.nick}}</span></td>
+        <td class="message"><span>{{=it.message}}</span></td>
+        <td class="date" data-timestamp="{{=it.timestamp}}"><span>just now</span></td>
+      </tr>
+    </script>
   </body>
 </html>

@@ -2,7 +2,7 @@ body {
   -webkit-app-region: drag;
   color: #262626;
   background: white;
-  font: 12px "Helvetica Neue", Helvetica, arial, sans-serif;
+  font: 15px "Helvetica Neue", Helvetica, arial, sans-serif;
 }
 
 h2 {
@@ -319,7 +319,7 @@ body.showing-dialog #dialog-contents {
 .channel tr.join .message,
 .channel tr.notice .message {
   color: #888;
-  font-size: .85em;
+  font-size: 1em;
 }
 
 .channel tr.quit .nick > span,
@@ -335,7 +335,7 @@ body.showing-dialog #dialog-contents {
 }
 
 .channel .date {
-  font-size: .8em;
+  font-size: 1em;
   text-align: right;
   min-width: 120px;
 }
@@ -382,7 +382,7 @@ h1, h2, h3 {
 }
 
 #content {
-  padding: 50px;
+  padding: 30px 50px 50px 30px;
 }
 
 #message-input {

@@ -6,13 +6,16 @@ $(function(){
   var messageFn = doT.template($('#template-message').text());
 
   // Attach event handler
-  $('#message-input').keypress(function(e){
+  $('#message-input').keydown(function(e){
+    var $input = $(this);
     if(e.which == 13){
-      var $input = $(this);
-      socket.emit('chat:msg', {message: $input.val(), classes:"", nick: userName});
-      $input.val("");
+      if($input.val().trim() != ""){
+        socket.emit('chat:msg', {message: $input.val(), classes:"", nick: userName});
+        $input.val("");
+      }
+      e.preventDefault();
     }
-  })
+  }).focus();
 
   // Handle a chat message
   socket.on('chat:msg', function(data){

@@ -19,8 +19,9 @@ $(function(){
 
   // Handle a chat message
   socket.on('chat:msg', function(data){
-    console.log(data);
-    var html = messageFn({classes: '', message: data.message, nick: data.nick});
-    $('.channel-log tbody').append(html);
+    var html = messageFn({classes: '', message: data.message, nick: data.nick, timestamp: data.timestamp});
+    $el = $(html);
+    $('.channel-log tbody').append($el);
+    $el.find('.date').timeago();
   })
 });

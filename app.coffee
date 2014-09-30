@@ -25,15 +25,19 @@ app.post "/webhook", (req, res) ->
     return res.json {} if req.body.user_id == 'USLACKBOT'
 
     # Broadcast the message to all clients
-    console.log req.body.text
-    console.log slack.parseMessage req.body.text
-    app.io.broadcast "chat:msg", message: slack.parseMessage(req.body.text), nick: req.body.user_name, classes: ""
+    app.io.broadcast "chat:msg", 
+      message: slack.parseMessage(req.body.text),
+      nick: req.body.user_name,
+      classes: "",
+      timestamp: Math.floor(req.body.timestamp*1000)
+  # Send a blank response, so slack knows we got it.
   res.send ""
 
 # Broadcast the chat message to all connected clients, 
 # including the one who made the request
 # also send it to slack
 app.io.route 'chat:msg', (req)->
+  req.data.timestamp = (new Date).getTime()
   app.io.broadcast 'chat:msg', req.data
   slack.postMessage req.data.message, req.data.nick
 

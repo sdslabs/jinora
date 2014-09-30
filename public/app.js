@@ -25,6 +25,9 @@ $(function(){
     var html = Mustache.render(template, data);
     $el = $(html);
     $('.channel-log tbody').append($el);
+    $('.channel-log').animate({
+      scrollTop: $('.channel-log')[0].scrollHeight
+    })
     $el.find('.date').timeago();
   })
 

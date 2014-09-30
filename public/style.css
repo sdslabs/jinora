@@ -275,10 +275,10 @@ body.showing-dialog #dialog-contents {
   position: absolute;
   top: 25px;
   width: 100%;
-  height: 100%;
+  height: 90%;
   overflow-y: scroll;
   padding-right: 10px;
-  padding-bottom: 25px;
+  padding-bottom: 45px;
   -webkit-app-region: no-drag;
 }
 
@@ -352,7 +352,7 @@ body.showing-dialog #dialog-contents {
 }
 
 ::-webkit-scrollbar {
-  width: 1px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -409,4 +409,13 @@ h1, h2, h3 {
   left: 50%;
   margin-top: -10px;
   margin-left: -10px;
+}
+
+@media (max-width: 300px) {
+  .date {
+    display: none;
+  }
+  .nick{
+    max-width:30px;
+  }
 }

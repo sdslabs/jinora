@@ -5,6 +5,8 @@ if process.env.NODE_ENV != 'production'
 
 slack = require('./slack')
 express = require('express.io')
+request = require('request')
+
 app = express().http().io()
 
 # Setup your sessions, just like normal.
@@ -23,7 +25,10 @@ app.post "/webhook", (req, res) ->
     return res.json {} if req.body.user_id == 'USLACKBOT'
 
     # Broadcast the message to all clients
-    app.io.broadcast "chat:msg", message: req.body.text, nick: req.body.user_name, classes: ""
+    console.log req.body.text
+    console.log slack.parseMessage req.body.text
+    app.io.broadcast "chat:msg", message: slack.parseMessage(req.body.text), nick: req.body.user_name, classes: ""
+  res.send ""
 
 # Broadcast the chat message to all connected clients, 
 # including the one who made the request

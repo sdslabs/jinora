@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-timeago/1.4.0/jquery.timeago.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache.min.js"></script>
   </head>
   <body>
 
@@ -28,13 +29,12 @@
       <textarea id="message-input" placeholder="Message"></textarea>
     </div>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="dot.min.js"></script>
     <script src="app.js"></script>
-    <script id="template-message" type="text/x-dot-template">
-      <tr class="{{=it.classes}}">
-        <td class="nick"><span>{{=it.nick}}</span></td>
-        <td class="message"><span>{{=it.message}}</span></td>
-        <td class="date timeago" title="{{=new Date(it.timestamp).toISOString()}}">just now</td>
+    <script id="template-message" type="x-tmpl-mustache">
+      <tr class="{{classes}}">
+        <td class="nick"><span>{{nick}}</span></td>
+        <td class="message"><span>{{message}}</span></td>
+        <td class="date timeago" title="{{new Date(timestamp).toISOString()}}">just now</td>
       </tr>
     </script>
   </body>

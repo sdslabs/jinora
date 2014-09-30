@@ -3,8 +3,8 @@ var userName = prompt("Enter your username");
 
 $(function(){
   // Compile template function
-  var messageFn = doT.template($('#template-message').text());
-
+  var template = $('#template-message').text();
+  Mustache.parse(template);
   // Attach event handler
   $('#message-input').keydown(function(e){
     var $input = $(this);
@@ -19,14 +19,16 @@ $(function(){
 
   // Handle a chat message
   socket.on('chat:msg', function(data){
-    var html = messageFn({classes: '', message: data.message, nick: data.nick, timestamp: data.timestamp});
+    var data = {
+      classes: '', message: data.message, nick: data.nick, timestamp: data.timestamp
+    };
+    var html = Mustache.render(template, data);
     $el = $(html);
     $('.channel-log tbody').append($el);
     $el.find('.date').timeago();
   })
 
   socket.on('connect', function(){
-    console.log("connected");
     socket.emit('chat:demand');
   })
 });

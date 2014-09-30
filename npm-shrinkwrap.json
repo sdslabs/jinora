@@ -2,6 +2,11 @@
   "name": "jinora",
   "version": "0.0.1",
   "dependencies": {
+    "CBuffer": {
+      "version": "0.1.5",
+      "from": "CBuffer@",
+      "resolved": "https://registry.npmjs.org/CBuffer/-/CBuffer-0.1.5.tgz"
+    },
     "coffee-script": {
       "version": "1.8.0",
       "from": "coffee-script@",

@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/captn3m0/jinora",
   "dependencies": {
+    "CBuffer": "^0.1.5",
     "coffee-script": "^1.8.0",
     "dotenv": "^0.4.0",
     "express.io": "^1.1.13",

@@ -6,8 +6,10 @@ if process.env.NODE_ENV != 'production'
 slack = require('./slack')
 express = require('express.io')
 request = require('request')
+CBuffer = require('CBuffer');
 
 app = express().http().io()
+messages = new CBuffer(100) # This is a circular buffer of 100 messages, which are stored in memory
 
 # Setup your sessions, just like normal.
 app.use express.cookieParser()
@@ -25,11 +27,17 @@ app.post "/webhook", (req, res) ->
     return res.json {} if req.body.user_id == 'USLACKBOT'
 
     # Broadcast the message to all clients
-    app.io.broadcast "chat:msg", 
+    msg = 
       message: slack.parseMessage(req.body.text),
       nick: req.body.user_name,
       classes: "",
       timestamp: Math.floor(req.body.timestamp*1000)
+
+    app.io.broadcast "chat:msg", msg
+
+    # Also store the message in memory
+    messages.push msg
+      
   # Send a blank response, so slack knows we got it.
   res.send ""
 
@@ -38,11 +46,23 @@ app.post "/webhook", (req, res) ->
 # also send it to slack
 app.io.route 'chat:msg', (req)->
   req.data.timestamp = (new Date).getTime()
+  # Send the message to all jinora users
   app.io.broadcast 'chat:msg', req.data
+  # Send message to slack
   slack.postMessage req.data.message, req.data.nick
+  # Store message in memory
+  messages.push req.data
+
+# Once a new chat client connects
+# Send them back the last 100 messages
+app.io.route 'chat:demand', (req)->
+  messages.forEach (msg)->
+    req.io.emit 'chat:msg', msg
 
 # Render the homepage
 app.get "/", (req, res) ->
   res.sendfile "index.html"
 
 app.listen process.env.PORT
+
+console.log (new Date)

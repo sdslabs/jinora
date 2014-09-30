@@ -24,4 +24,9 @@ $(function(){
     $('.channel-log tbody').append($el);
     $el.find('.date').timeago();
   })
+
+  socket.on('connect', function(){
+    console.log("connected");
+    socket.emit('chat:demand');
+  })
 });

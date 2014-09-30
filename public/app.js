@@ -1,4 +1,7 @@
-var socket = io.connect();
+var socket = io.connect(document.location.origin,{
+  reconnectionDelay: 200,
+  reconnectionDelayMax: 1000
+});
 var userName = prompt("Enter your username");
 
 $(function(){
@@ -9,6 +12,10 @@ $(function(){
   $('#message-input').keydown(function(e){
     var $input = $(this);
     if(e.which == 13){
+      if(socket.socket.connected===false){
+        alert('Please wait while we reconnect');
+        return
+      }
       if($input.val().trim() != ""){
         socket.emit('chat:msg', {message: $input.val(), classes:"", nick: userName});
         $input.val("");
@@ -34,4 +41,10 @@ $(function(){
   socket.on('connect', function(){
     socket.emit('chat:demand');
   })
+  socket.on('reconnect', function(){
+    $('#message-input').removeClass('disconnected').attr('placeholder', "Message");
+  })
+  socket.on('disconnect', function(){
+    $('#message-input').addClass('disconnected').attr('placeholder', "Disconnected");
+  });
 });

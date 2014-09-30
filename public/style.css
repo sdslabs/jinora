@@ -229,6 +229,10 @@ body.showing-dialog #dialog-contents {
   outline: none;
 }
 
+#message-input.disconnected{
+  background-color:#FFFFED;
+}
+
 #message-input.multiline {
   height: 100px;
 }

@@ -62,6 +62,6 @@ app.io.route 'chat:demand', (req)->
 app.get "/", (req, res) ->
   res.sendfile "index.html"
 
-app.listen process.env.PORT
+app.listen process.env.PORT || 3000
 
 console.log (new Date)

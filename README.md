@@ -4,6 +4,8 @@ jinora is a simple slack-backed chat application that proxies messages to and fr
 
 No more need to having your team monitor IRC or Olark, it can all be done in Slack.
 
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/captn3m0/jinora)
+
 [![Jinora artwork by peachei](http://i.minus.com/ibbQBLP3jpGb8R.jpg)](http://peachei.deviantart.com/art/Older-Jinora-317463839)
 
 #[LIVE DEMO](http://chat.sdslabs.co)

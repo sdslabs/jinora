@@ -1,6 +1,6 @@
 {
   "name": "jinora",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Jinora is a public chat application for a slack team that lets anonymous users talk to the entire team.",
   "main": "app.js",
   "scripts": {
@@ -30,5 +30,6 @@
     "dotenv": "^0.4.0",
     "express.io": "^1.1.13",
     "request": "^2.42.0"
-  }
+  },
+  "engine": "node 0.10.16"
 }

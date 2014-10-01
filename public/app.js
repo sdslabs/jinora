@@ -26,10 +26,14 @@ $(function(){
 
   // Handle a chat message
   socket.on('chat:msg', function(data){
-    data = {
-      classes: data.classes, message: data.message, nick: data.nick, timestamp: data.timestamp
+    var timestamp = new Date(data.timestamp).toISOString();
+    var templateData = {
+      classes: data.classes,
+      message: data.message,
+      nick: data.nick,
+      timestamp: timestamp
     };
-    var html = Mustache.render(template, data);
+    var html = Mustache.render(template, templateData);
     $el = $(html);
     $('.channel-log tbody').append($el);
     $('.channel-log').animate({

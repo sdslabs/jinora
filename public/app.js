@@ -14,9 +14,9 @@ $(function(){
     if(e.which == 13){
       if(socket.socket.connected===false){
         alert('Please wait while we reconnect');
-        return
+        return;
       }
-      if($input.val().trim() != ""){
+      if($input.val().trim() !== ""){
         socket.emit('chat:msg', {message: $input.val(), classes:"", nick: userName});
         $input.val("");
       }
@@ -26,24 +26,24 @@ $(function(){
 
   // Handle a chat message
   socket.on('chat:msg', function(data){
-    var data = {
-      classes: '', message: data.message, nick: data.nick, timestamp: data.timestamp
+    data = {
+      classes: data.classes, message: data.message, nick: data.nick, timestamp: data.timestamp
     };
     var html = Mustache.render(template, data);
     $el = $(html);
     $('.channel-log tbody').append($el);
     $('.channel-log').animate({
       scrollTop: $('.channel-log')[0].scrollHeight
-    })
+    });
     $el.find('.date').timeago();
-  })
+  });
 
   socket.on('connect', function(){
     socket.emit('chat:demand');
-  })
+  });
   socket.on('reconnect', function(){
     $('#message-input').removeClass('disconnected').attr('placeholder', "Message");
-  })
+  });
   socket.on('disconnect', function(){
     $('#message-input').addClass('disconnected').attr('placeholder', "Disconnected");
   });

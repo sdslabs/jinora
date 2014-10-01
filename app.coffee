@@ -55,8 +55,7 @@ app.io.route 'chat:msg', (req)->
 # Once a new chat client connects
 # Send them back the last 100 messages
 app.io.route 'chat:demand', (req)->
-  messages.forEach (msg)->
-    req.io.emit 'chat:msg', msg
+  req.io.emit 'chat:log', messages.toArray()
 
 # Render the homepage
 app.get "/", (req, res) ->

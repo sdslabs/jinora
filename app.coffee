@@ -19,24 +19,23 @@ app.use express.static __dirname + '/public'
 
 # Slack outgoing webhook is caught here
 app.post "/webhook", (req, res) ->
-  try
-    throw "Invalid Token" unless req.body.token == process.env.OUTGOING_TOKEN
-    
-    # Send a blank response if the message was by a service
-    # Prevents us from falling into a loop
-    return res.json {} if req.body.user_id == 'USLACKBOT'
-
-    # Broadcast the message to all clients
-    msg = 
-      message: slack.parseMessage(req.body.text),
-      nick: req.body.user_name,
-      classes: "",
-      timestamp: Math.floor(req.body.timestamp*1000)
-
-    app.io.broadcast "chat:msg", msg
-
-    # Also store the message in memory
-    messages.push msg
+  throw "Invalid Token" unless req.body.token == process.env.OUTGOING_TOKEN
+  
+  # Send a blank response if the message was by a service
+  # Prevents us from falling into a loop
+  return res.json {} if req.body.user_id == 'USLACKBOT'
+  
+  # Broadcast the message to all clients
+  msg = 
+    message: slack.parseMessage(req.body.text),
+    nick: req.body.user_name,
+    classes: "admin",
+    timestamp: Math.floor(req.body.timestamp*1000)
+  
+  app.io.broadcast "chat:msg", msg
+  
+  # Also store the message in memory
+  messages.push msg
       
   # Send a blank response, so slack knows we got it.
   res.send ""

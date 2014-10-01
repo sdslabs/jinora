@@ -315,6 +315,10 @@ body.showing-dialog #dialog-contents {
   font-weight: 200;
 }
 
+.channel .admin{
+  background-color: #DCF7F3;
+}
+
 .channel tr.me .nick {
   font-weight: bold;
 }

@@ -7,6 +7,8 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-timeago/1.4.0/jquery.timeago.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache.min.js"></script>
+    <script src="//cdn.jsdelivr.net/emojione/1.2.2/lib/js/emojione.min.js"></script>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/emojione/1.2.2/assets/css/emojione.min.css" type="text/css" media="all">
   </head>
   <body>
 
@@ -33,7 +35,7 @@
     <script id="template-message" type="x-tmpl-mustache">
       <tr class="{{classes}}">
         <td class="nick"><span>{{nick}}</span></td>
-        <td class="message"><span>{{message}}</span></td>
+        <td class="message"><span>{{{message}}}</span></td>
         <td class="date timeago" title="{{timestamp}}"></td>
       </tr>
     </script>

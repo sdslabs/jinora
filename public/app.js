@@ -2,6 +2,9 @@ var socket = io.connect(document.location.origin,{
   reconnectionDelay: 200,
   reconnectionDelayMax: 1000
 });
+// Convert smileys to emoji as well
+emojione.ascii = true;
+
 var userName = prompt("Enter your username");
 
 $(function(){
@@ -27,9 +30,11 @@ $(function(){
   // Handle a chat message
   socket.on('chat:msg', function(data){
     var timestamp = new Date(data.timestamp).toISOString();
+    // Escape the message and run it through emojione
+    var message = emojione.shortnameToImage(Mustache.escape(data.message));
     var templateData = {
       classes: data.classes,
-      message: data.message,
+      message: message,
       nick: data.nick,
       timestamp: timestamp
     };

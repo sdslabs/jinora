@@ -17,6 +17,8 @@ app.use express.bodyParser()
 app.use express.session secret: process.env.SESSION_SECRET
 app.use express.static __dirname + '/public'
 
+app.io.set 'transports', ['xhr-polling']
+
 # Slack outgoing webhook is caught here
 app.post "/webhook", (req, res) ->
   throw "Invalid Token" unless req.body.token == process.env.OUTGOING_TOKEN
@@ -63,4 +65,3 @@ app.get "/", (req, res) ->
 
 app.listen process.env.PORT || 3000
 
-console.log (new Date)

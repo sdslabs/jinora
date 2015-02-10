@@ -26,7 +26,7 @@ Configuration Options:
 - **INCOMING_TOKEN** Service Token from Slack's incoming webhook
 - **TEAM_DOMAIN** Domain name of your slack team (just sdslabs, not sdslabs.slack.com)
 - **SESSION_SECRET** Session secret key
-- **API_TOKEN** API Token for the slack team. Generated at <https://api.slack.com> (scroll to bottom).
+- **API_TOKEN** API Token for the slack team. Generated at <https://api.slack.com/web> (scroll to bottom).
 
 These configuration options can either be provided via a `.env` file in development, or via Heroku config variables, if you are deploying to Heroku. A sample env file is provided in `.env.sample`. You can see service tokens on the left sidebar in Slack configuration.
 

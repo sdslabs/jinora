@@ -1,3 +1,8 @@
+# First task is to setup environment
+if process.env.NODE_ENV != 'production'
+  dotenv = require 'dotenv'
+  dotenv.load()
+
 slack = require "../slack"
 assert = require "assert"
 

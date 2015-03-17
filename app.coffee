@@ -8,6 +8,7 @@ express = require('express.io')
 request = require('request')
 CBuffer = require('CBuffer');
 
+
 app = express().http().io()
 messages = new CBuffer(100) # This is a circular buffer of 100 messages, which are stored in memory
 

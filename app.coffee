@@ -47,8 +47,14 @@ app.post "/webhook", (req, res) ->
 # also send it to slack
 app.io.route 'chat:msg', (req)->
   req.data.timestamp = (new Date).getTime()
-  # Send the message to all jinora users
-  app.io.broadcast 'chat:msg', req.data
+
+  # If the message is private
+  if req.data.message[0] == '!'
+    req.data.private = true
+    req.io.emit 'chat:msg', req.data
+  else
+    # Send the message to all jinora users
+    app.io.broadcast 'chat:msg', req.data
   # Send message to slack
   slack.postMessage req.data.message, process.env.SLACK_CHANNEL, req.data.nick
   # Store message in memory
@@ -57,7 +63,11 @@ app.io.route 'chat:msg', (req)->
 # Once a new chat client connects
 # Send them back the last 100 messages
 app.io.route 'chat:demand', (req)->
-  req.io.emit 'chat:log', messages.toArray()
+  logs = messages.toArray()
+  logs = logs.filter (msg)->
+    return false if msg.message[0] == '!'
+    true
+  req.io.emit 'chat:log', logs
 
 # Render the homepage
 app.get "/", (req, res) ->

@@ -323,6 +323,14 @@ body.showing-dialog #dialog-contents {
   font-weight: bold;
 }
 
+.private{
+  background-color: #e74c3c;
+}
+
+.private .nick span{
+  font-weight: bold;
+}
+
 .channel tr.quit .message,
 .channel tr.join .message,
 .channel tr.notice .message {

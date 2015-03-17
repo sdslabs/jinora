@@ -18,6 +18,9 @@ $(function(){
       var timestamp = new Date(data.timestamp).toISOString();
       // Escape the message and run it through emojione
       var message = emojione.shortnameToImage(Mustache.escape(data.message));
+      if(data.private){
+        data.classes+=" private";
+      }
       var templateData = {
         classes: data.classes,
         message: message,

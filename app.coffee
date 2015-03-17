@@ -3,13 +3,13 @@ if process.env.NODE_ENV != 'production'
   dotenv = require 'dotenv'
   dotenv.load()
 
-slack = require('./slack')
 express = require('express.io')
-request = require('request')
 CBuffer = require('CBuffer');
+slack = require('slack-utils/api')(process.env.API_TOKEN, process.env.INCOMING_HOOK_URL)
+
 
 app = express().http().io()
-messages = new CBuffer(100) # This is a circular buffer of 100 messages, which are stored in memory
+messages = new CBuffer(process.env.BUFFER_SIZE) # This is a circular buffer of 100 messages, which are stored in memory
 
 # Setup your sessions, just like normal.
 app.use express.cookieParser()
@@ -50,7 +50,7 @@ app.io.route 'chat:msg', (req)->
   # Send the message to all jinora users
   app.io.broadcast 'chat:msg', req.data
   # Send message to slack
-  slack.postMessage req.data.message, req.data.nick
+  slack.postMessage req.data.message, process.env.SLACK_CHANNEL, req.data.nick
   # Store message in memory
   messages.push req.data
 

@@ -29,7 +29,7 @@
     "coffee-script": "^1.8.0",
     "dotenv": "^0.4.0",
     "express.io": "^1.1.13",
-    "request": "^2.42.0"
+    "slack-utils": "^0.1.5"
   },
   "engines": {
     "node": "0.10.x"

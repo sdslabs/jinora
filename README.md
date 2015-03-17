@@ -74,6 +74,20 @@ Screenshots for a better understanding (outgoing and then incoming):
 
 Jinora communicates with slack by means of two webhooks, one incoming and one outgoing. This communication is then broadcasted to all clients connected to Jinora. On the other side, all messages that Jinora receives from any of the user is sent back to Slack.
 
+#Upgrading
+
+To upgrade from 1.x to 2.x, follow these steps:
+
+1. Go to your incoming webhook and note down the URL
+2. Go to heroku config and set the following variables:  
+```
+INCOMING_HOOK_URL=https://hooks.slack.com/services/WHAT_YOU_COPIED
+BUFFER_SIZE=1000
+SLACK_CHANNEL=public
+```
+3. Push the update.
+4. You can remove the old `INCOMING_TOKEN` config.
+
 ##Licence
 Jinora is licenced under the [MIT Licence](http://nemo.mit-license.org/).
 

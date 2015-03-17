@@ -10,9 +10,9 @@ listToHash = (list, keyName)->
 data = {}
 
 getUsers = (token)->
-    request.get {url: "https://slack.com/api/users.list?token=#{token}", json: true}, (err, res, users)->
-      throw err if err
-      data['users'] = listToHash users, "members"
+  request.get {url: "https://slack.com/api/users.list?token=#{token}", json: true}, (err, res, users)->
+    throw err if err
+    data['users'] = listToHash users, "members"
 
 getChannels = (token)->
   request.get {url: "https://slack.com/api/channels.list?token=#{token}", json: true}, (err, res, channels)->

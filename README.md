@@ -76,7 +76,7 @@ Jinora communicates with slack by means of two webhooks, one incoming and one ou
 
 #Upgrading
 
-To upgrade from 1.x to 2.x, follow these steps:
+Make sure you upgrade to 2.0.1 atleast. To upgrade from 1.x to 2.x, follow these steps:
 
 1. Go to your incoming webhook and note down the URL
 2. Go to heroku config and set the following variables:  

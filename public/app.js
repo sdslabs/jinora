@@ -7,7 +7,7 @@ emojione.ascii = true;
 
 var userName = prompt("Enter your username");
 
-$(function(){
+$(function chats(){
 
   // Compile template function
   var template = $('#template-message').text();
@@ -56,6 +56,10 @@ $(function(){
   socket.on('chat:msg', function(data){
     app.chatHandler(data);
     app.scroll();
+    if(document[hidden])      //if page is hidden updateCount is called
+    {
+      updateCount();
+    }
   });
 
   socket.on('chat:log', function(msgs){
@@ -77,3 +81,4 @@ $(function(){
     $('#message-input').addClass('disconnected').attr('placeholder', "Disconnected");
   });
 });
+

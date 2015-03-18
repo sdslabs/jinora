@@ -4,6 +4,8 @@
     <title>chat with sdslabs</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="normalize.css">
+    <link rel="stylesheet" href="skeleton.css">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-timeago/1.4.0/jquery.timeago.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache.min.js"></script>
@@ -11,25 +13,30 @@
     <link rel="stylesheet" href="//cdn.jsdelivr.net/emojione/1.2.2/assets/css/emojione.min.css" type="text/css" media="all">
   </head>
   <body>
-
-    <div id="slate">
-      <div id="content">
-        <div id="channels">
-          <div class="channel focused">
-            <h2>chat</h2>
-
-            <div class="channel-log">
-              <table class="">
-                <tbody>
-                </tbody>
-              </table>
-            </div>
+    <div class="container u-full-width">
+      <div class="row">
+        <h2>chat</h2>
+      </div>
+      <div class="row u-full-width">
+        <div class="ten columns u-full-width">
+          <div class="channel-log u-full-width">
+            <table>
+              <tbody></tbody>
+            </table>
           </div>
         </div>
+        <div class="two columns" id="userlist">
+          List of users
+        </div>
       </div>
-
-      <textarea id="message-input" placeholder="Message
+      <div class="row">
+        <textarea id="message-input" class="u-fill-width" placeholder="Message
 Start a message with ! to mark it private"></textarea>
+      </div>
+    </div>
+
+
+
     </div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="app.js"></script>
@@ -39,6 +46,11 @@ Start a message with ! to mark it private"></textarea>
         <td class="message"><span>{{{message}}}</span></td>
         <td class="date timeago" title="{{timestamp}}"></td>
       </tr>
+    </script>
+    <script id="template-users" type="x-tmpl-mustache">
+      {{#users}}
+      <h5>{{username}}</h5>
+      {{/users}}
     </script>
   </body>
 </html>

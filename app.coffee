@@ -6,10 +6,11 @@ if process.env.NODE_ENV != 'production'
 express = require('express.io')
 CBuffer = require('CBuffer');
 slack = require('slack-utils/api')(process.env.API_TOKEN, process.env.INCOMING_HOOK_URL)
-
+online_list = require('./presence.coffee')
 
 app = express().http().io()
-messages = new CBuffer(process.env.BUFFER_SIZE) # This is a circular buffer of 100 messages, which are stored in memory
+# This is a circular buffer of messages, which are stored in memory
+messages = new CBuffer(parseInt(process.env.BUFFER_SIZE))
 
 # Setup your sessions, just like normal.
 app.use express.cookieParser()
@@ -22,27 +23,27 @@ app.io.set 'transports', ['xhr-polling']
 # Slack outgoing webhook is caught here
 app.post "/webhook", (req, res) ->
   throw "Invalid Token" unless req.body.token == process.env.OUTGOING_TOKEN
-  
+
   # Send a blank response if the message was by a service
   # Prevents us from falling into a loop
   return res.json {} if req.body.user_id == 'USLACKBOT'
-  
+
   # Broadcast the message to all clients
-  msg = 
+  msg =
     message: slack.parseMessage(req.body.text),
     nick: req.body.user_name,
     classes: "admin",
     timestamp: Math.floor(req.body.timestamp*1000)
-  
+
   app.io.broadcast "chat:msg", msg
-  
+
   # Also store the message in memory
   messages.push msg
-      
+
   # Send a blank response, so slack knows we got it.
   res.send ""
 
-# Broadcast the chat message to all connected clients, 
+# Broadcast the chat message to all connected clients,
 # including the one who made the request
 # also send it to slack
 app.io.route 'chat:msg', (req)->
@@ -64,10 +65,13 @@ app.io.route 'chat:msg', (req)->
 # Send them back the last 100 messages
 app.io.route 'chat:demand', (req)->
   logs = messages.toArray()
+  # We filter out non-private messages
   logs = logs.filter (msg)->
-    return false if msg.message[0] == '!'
-    true
+    msg.message[0] != '!'
   req.io.emit 'chat:log', logs
+
+app.io.route 'presence:demand', (req)->
+  req.io.emit 'presence:list', online_list
 
 # Render the homepage
 app.get "/", (req, res) ->

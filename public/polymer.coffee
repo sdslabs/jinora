@@ -57,6 +57,7 @@ socket.on 'chat:log', (log)->
   log.map (msg)->
     msg.avatar = "images/avatars/#{avatars[msg.avatar]}.jpg" if Number.isInteger msg.avatar
     msg.color = colors[msg.color] if msg.color?
+    msg.timestamp = new Date(msg.timestamp).toISOString();
     template.messages.push msg
 
 socket.on 'presence:list', (list)->

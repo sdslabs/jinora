@@ -31,7 +31,7 @@
     "coffee-script": "^1.8.0",
     "dotenv": "^0.4.0",
     "express.io": "^1.1.13",
-    "slack-utils": "^0.1.5"
+    "slack-utils": "^0.2.0"
   },
   "engines": {
     "node": "0.10.x"

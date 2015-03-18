@@ -1,4 +1,4 @@
-template = document.querySelector('body template:first-child')
+template = document.querySelector('#template')
 socket = io.connect document.location.origin,
   reconnectionDelay: 200
   reconnectionDelayMax: 1000

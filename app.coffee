@@ -34,6 +34,7 @@ app.post "/webhook", (req, res) ->
     nick: req.body.user_name,
     classes: "admin",
     timestamp: Math.floor(req.body.timestamp*1000)
+    avatar: slack.userInfoById(req.body.user_id)['profile']['image_72']
 
   app.io.broadcast "chat:msg", msg
 

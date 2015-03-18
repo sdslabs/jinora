@@ -8,9 +8,14 @@ colors = ['navy', 'slate', 'olive', 'moss', 'chocolate', 'buttercup', 'maroon', 
 
 avatar = (Math.random() * avatars.length) >>> 0
 color  = (Math.random() * colors.length) >>> 0
-userName = prompt('Enter your username')
+
+template.avatar = "images/avatars/#{avatars[avatar]}.jpg"
+template.color  = colors[color]
 template.status = 'connected'
 template.messages = []
+
+template.userName = prompt('Enter your username')
+
 template.items = [
   {
     icon: 'cloud'
@@ -29,7 +34,7 @@ template.items = [
 sendMessage = (msg)->
   socket.emit 'chat:msg',
     message: msg
-    nick: userName
+    nick: template.userName
     avatar: avatar
     color: color
 
@@ -58,8 +63,7 @@ socket.on 'connect', ->
   socket.emit 'presence:demand'
 
 socket.on 'chat:msg', (data)->
-  console.log data
   data.timestamp = new Date(data.timestamp).toISOString();
-  data.avatar = avatars[data.avatar]
-  data.color = colors[data.color]
+  data.avatar = "images/avatars/#{avatars[data.avatar]}.jpg" if Number.isInteger data.avatar
+  data.color = colors[data.color] if data.color?
   template.messages.push data

@@ -13,23 +13,8 @@ template.avatar = "images/avatars/#{avatars[avatar]}.jpg"
 template.color  = colors[color]
 template.status = 'connected'
 template.messages = []
-
+template.users = []
 template.userName = prompt('Enter your username')
-
-template.items = [
-  {
-    icon: 'cloud'
-    title: 'PubNub'
-  }
-  {
-    icon: 'polymer'
-    title: 'Polymer'
-  }
-  {
-    icon: 'favorite'
-    title: 'Love'
-  }
-]
 
 sendMessage = (msg)->
   socket.emit 'chat:msg',
@@ -67,3 +52,7 @@ socket.on 'chat:msg', (data)->
   data.avatar = "images/avatars/#{avatars[data.avatar]}.jpg" if Number.isInteger data.avatar
   data.color = colors[data.color] if data.color?
   template.messages.push data
+
+socket.on 'presence:list', (list)->
+  console.log list
+  template.users = list

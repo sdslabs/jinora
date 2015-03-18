@@ -18,9 +18,11 @@
     <script src="/socket.io/socket.io.js"></script>
     <link rel="import" href="bower_components/core-scaffold/core-scaffold.html">
     <link rel="import" href="bower_components/core-item/core-item.html">
+    <link rel="import" href="bower_components/core-icons/social-icons.html">
     <link rel="import" href="bower_components/paper-input/paper-input.html">
     <link rel="import" href="bower_components/paper-fab/paper-fab.html">
     <link rel="import" href="x-chat-list.html">
+    <link rel="import" href="x-user-list.html">
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
@@ -31,13 +33,8 @@
             <div class="middle avatar {{color}}" style="background-image: url({{avatar}})"></div>
               <div class="bottom uuid">{{userName}}</div>
           </core-toolbar>
+          <x-user-list users="{{users}}"></x-chat-list>
 
-          <section layout vertical id="onlineList">
-            <core-item label="Build with:"></core-item>
-            <template repeat="{{item in items}}">
-              <core-item icon="{{item.icon}}" label="{{item.title}}"></core-item>
-            </template>
-          </section>
 
         </core-header-panel>
 

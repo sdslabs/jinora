@@ -1,0 +1,20 @@
+<!--
+A single user list with a username, avatar, and desc.
+##### Example
+    <x-user-list users="{{users}}"></x-user-list>
+-->
+<polymer-element name="x-user-list" attributes="users">
+  <template>
+    <section layout vertical id="onlineList">
+      <core-item label="Online"></core-item>
+      <template repeat="{{user in users}}">
+        <core-item icon="social:person" label="{{user}}"></core-item>
+      </template>
+    </section>
+</template>
+<script>
+Polymer('x-user-list', {
+    users: []
+});
+</script>
+</polymer-element>

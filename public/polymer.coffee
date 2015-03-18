@@ -53,6 +53,11 @@ socket.on 'chat:msg', (data)->
   data.color = colors[data.color] if data.color?
   template.messages.push data
 
+socket.on 'chat:log', (log)->
+  log.map (msg)->
+    msg.avatar = "images/avatars/#{avatars[msg.avatar]}.jpg" if Number.isInteger msg.avatar
+    msg.color = colors[msg.color] if msg.color?
+    template.messages.push msg
+
 socket.on 'presence:list', (list)->
-  console.log list
   template.users = list

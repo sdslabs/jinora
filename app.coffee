@@ -7,7 +7,7 @@ express = require('express.io')
 CBuffer = require('CBuffer');
 slack = require('slack-utils/api')(process.env.API_TOKEN, process.env.INCOMING_HOOK_URL)
 online_list = require('./presence.coffee')
-
+rate_limit = require('./rate_limit.coffee')
 app = express().http().io()
 # This is a circular buffer of messages, which are stored in memory
 messages = new CBuffer(parseInt(process.env.BUFFER_SIZE))
@@ -51,6 +51,7 @@ app.post "/webhook", (req, res) ->
 # including the one who made the request
 # also send it to slack
 app.io.route 'chat:msg', (req)->
+  return if rate_limit(req.socket.id)
   return if req.data.nick != 'nemo'
   req.data.timestamp = (new Date).getTime()
 

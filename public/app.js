@@ -11,18 +11,13 @@ $(function(){
 
   // Compile template function
   var template = $('#template-message').text();
-  var userTemplate = $('#template-users').text();
   Mustache.parse(template);
-  Mustache.parse(userTemplate);
 
   var app = {
     chatHandler: function(data){
       var timestamp = new Date(data.timestamp).toISOString();
       // Escape the message and run it through emojione
       var message = emojione.shortnameToImage(Mustache.escape(data.message));
-      if(data.private){
-        data.classes+=" private";
-      }
       var templateData = {
         classes: data.classes,
         message: message,
@@ -39,7 +34,7 @@ $(function(){
         scrollTop: $('.channel-log')[0].scrollHeight
       });
     }
-  };
+  }
 
   // Attach event handler
   $('#message-input').keydown(function(e){
@@ -64,7 +59,7 @@ $(function(){
   });
 
   socket.on('chat:log', function(msgs){
-    for(var i in msgs){
+    for(i in msgs){
       var msg = msgs[i];
       app.chatHandler(msg);
     }
@@ -72,20 +67,8 @@ $(function(){
     app.scroll();
   });
 
-  socket.on('presence:list', function(list){
-    var data = list.map(function(u){
-      return {"username": u};
-    });
-    data = {"users":data};
-    console.log(data);
-    var html = Mustache.render(userTemplate, data);
-    console.log(html);
-    $('#userlist').html(html);
-  });
-
   socket.on('connect', function(){
     socket.emit('chat:demand');
-    socket.emit('presence:demand');
   });
   socket.on('reconnect', function(){
     $('#message-input').removeClass('disconnected').attr('placeholder', "Message");

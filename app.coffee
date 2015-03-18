@@ -91,6 +91,9 @@ presence.on 'change', ()->
 
 # Render the homepage
 app.get "/", (req, res) ->
+  res.sendfile "public/index.html"
+
+app.get "/old", (req, res) ->
   res.sendfile "index.html"
 
 app.listen process.env.PORT || 3000

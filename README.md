@@ -84,6 +84,7 @@ Make sure you upgrade to 2.0.1 atleast. To upgrade from 1.x to 2.x, follow these
 INCOMING_HOOK_URL=https://hooks.slack.com/services/WHAT_YOU_COPIED
 BUFFER_SIZE=1000
 SLACK_CHANNEL=public
+BASE_URL=https://jinora.herokuapp.com #Replace this with your base url
 ```
 3. Push the update.
 4. You can remove the old `INCOMING_TOKEN` config.

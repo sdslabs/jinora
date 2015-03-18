@@ -39,6 +39,11 @@
       "description": "Name of public channel in slack",
       "required": true,
       "value": "public"
+    },
+    "BASE_URL": {
+      "description": "Base url of the deployed application",
+      "required": false,
+      "value": "https://jinora.herokuapp.com"
     }
   }
 }

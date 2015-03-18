@@ -5,6 +5,12 @@ A single user list with a username, avatar, and desc.
 -->
 <polymer-element name="x-user-list" attributes="users">
   <template>
+    <style type="text/css">
+      #onlineList {
+        margin: 16px 0 0 20px;
+        text-transform: capitalize;
+      }
+    </style>
     <section layout vertical id="onlineList">
       <core-item label="Online"></core-item>
       <template repeat="{{user in users}}">

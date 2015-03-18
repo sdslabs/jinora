@@ -54,11 +54,6 @@ paper-fab[icon=send] {
 
 /* Drawer */
 
-#onlineList {
-    margin: 16px;
-    text-transform: capitalize;
-}
-
 ::content > .avatar {
     margin: 0; /* override */
 }

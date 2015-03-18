@@ -1,10 +1,10 @@
 <!--
 A single user list with a username, avatar, and desc.
 ##### Example
-    <x-chat-list avatar="url" username="name" message="hello" status="online" timestamp="1420145273945"></x-chat-list>
+    <x-chat-list avatar="name" nick="name" message="hello" status="online" timestamp="1420145273945"></x-chat-list>
 -->
 <script src="bower_components/time-elements/time-elements.js"></script>
-<polymer-element name="x-chat-list" attributes="avatar color username text status timestamp">
+<polymer-element name="x-chat-list" attributes="avatar color nick message status timestamp">
   <template>
     <style>
     :host {
@@ -42,7 +42,6 @@ A single user list with a username, avatar, and desc.
         display: block;
     }
     .username {
-        text-transform: capitalize;
         font-weight: 500;
         color: #919191;
         line-height: 1.3em;
@@ -91,12 +90,12 @@ A single user list with a username, avatar, and desc.
     </style>
 
     <section class="user-list" layout horizontal>
-        <div class="avatar {{color}}" style="background-image: url({{avatar}})">
+        <div class="avatar {{color}}" style="background-image: url(images/avatars/{{avatar}}.jpg)">
             <div class="status {{status}}"></div>
         </div>
         <div flex>
-            <div class="username">{{username}}</div>
-            <div class="text">{{text}}</div>
+            <div class="username" data-nick="{{nick}}">{{nick}}</div>
+            <div class="text" data-value="{{message}}">{{message}}</div>
         </div>
         <time class="timestamp" is="relative-time" datetime="{{timestamp}}"></time>
     </section>
@@ -105,8 +104,8 @@ A single user list with a username, avatar, and desc.
 Polymer('x-chat-list', {
     avatar: '',
     color: '',
-    username: '',
-    text: '',
+    nick: '',
+    message: '',
     status: '',
     timestamp: new Date().toISOString(),
 });

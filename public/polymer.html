@@ -14,6 +14,7 @@
 
     <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <link rel="import" href="bower_components/core-scaffold/core-scaffold.html">
     <link rel="import" href="bower_components/core-item/core-item.html">
@@ -21,9 +22,6 @@
     <link rel="import" href="bower_components/paper-fab/paper-fab.html">
     <link rel="import" href="x-chat-list.html">
     <link rel="stylesheet" href="style.css">
-
-    <script src="//cdn.jsdelivr.net/emojione/1.2.2/lib/js/emojione.min.js"></script>
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/emojione/1.2.2/assets/css/emojione.min.css" type="text/css" media="all">
   </head>
   <body>
     <template is="auto-binding">
@@ -45,13 +43,13 @@
 
         <div tool layout horizontal flex>
           <span flex>Chat with SDSLabs</span>
-          <core-icon icon="account-circle"></core-icon><span>{{occupancy}}</span>
+          <core-icon icon="account-circle"></core-icon><span>{{status}}</span>
         </div>
 
         <section layout vertical fit id="chat">
         <div flex class="chat-list">
           <template repeat="{{message in messages}}">
-            <x-chat-list color="{{message.color}}" avatar="{{message.avatar}}" username="{{message.uuid}}" text="{{message.text}}"  status="{{message.status}}" timestamp="{{message.timestamp}}"></x-chat-list>
+            <x-chat-list color="{{message.color}}" avatar="{{message.avatar}}" nick="{{message.nick}}" message="{{message.message}}"  status="{{message.status}}" timestamp="{{message.timestamp}}"></x-chat-list>
           </template>
         </div>
         <div class="shim"></div>

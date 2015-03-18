@@ -6,7 +6,7 @@ if process.env.NODE_ENV != 'production'
 express = require('express.io')
 CBuffer = require('CBuffer');
 slack = require('slack-utils/api')(process.env.API_TOKEN, process.env.INCOMING_HOOK_URL)
-online_list = require('./presence.coffee')
+presence = require('./presence.coffee')
 rate_limit = require('./rate_limit.coffee')
 app = express().http().io()
 # This is a circular buffer of messages, which are stored in memory
@@ -85,7 +85,10 @@ app.io.route 'chat:demand', (req)->
   req.io.emit 'chat:log', logs
 
 app.io.route 'presence:demand', (req)->
-  req.io.emit 'presence:list', online_list
+  req.io.emit 'presence:list', presence.online()
+
+presence.on 'change', ()->
+  app.io.broadcast 'presence:list', presence.online()
 
 # Render the homepage
 app.get "/", (req, res) ->

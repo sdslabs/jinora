@@ -2006,8 +2006,8 @@
       }
     },
     "slack-utils": {
-      "version": "0.2.0",
-      "from": "slack-utils@0.2.0",
+      "version": "0.2.1",
+      "from": "slack-utils@0.2.1",
       "dependencies": {
         "request": {
           "version": "2.53.0",
@@ -2016,7 +2016,7 @@
           "dependencies": {
             "bl": {
               "version": "0.9.4",
-              "from": "bl@^0.9.0",
+              "from": "bl@~0.9.0",
               "resolved": "https://registry.npmjs.org/bl/-/bl-0.9.4.tgz",
               "dependencies": {
                 "readable-stream": {

@@ -28,13 +28,16 @@ app.post "/webhook", (req, res) ->
   # Prevents us from falling into a loop
   return res.json {} if req.body.user_id == 'USLACKBOT'
 
+  if slack.userInfoById(req.body.user_id)
+    avatar = slack.userInfoById(req.body.user_id)['profile']['image_72']
+
   # Broadcast the message to all clients
   msg =
     message: slack.parseMessage(req.body.text),
     nick: req.body.user_name,
     classes: "admin",
     timestamp: Math.floor(req.body.timestamp*1000)
-    avatar: slack.userInfoById(req.body.user_id)['profile']['image_72']
+    avatar: avatar
 
   app.io.broadcast "chat:msg", msg
 
@@ -48,6 +51,7 @@ app.post "/webhook", (req, res) ->
 # including the one who made the request
 # also send it to slack
 app.io.route 'chat:msg', (req)->
+  return if req.data.nick != 'nemo'
   req.data.timestamp = (new Date).getTime()
 
   # If the message is private
@@ -57,8 +61,16 @@ app.io.route 'chat:msg', (req)->
   else
     # Send the message to all jinora users
     app.io.broadcast 'chat:msg', req.data
+
+  avatars = ['tabby', 'bengal', 'persian', 'mainecoon', 'ragdoll', 'sphynx', 'siamese', 'korat', 'japanesebobtail', 'abyssinian', 'scottishfold']
+
   # Send message to slack
-  slack.postMessage req.data.message, process.env.SLACK_CHANNEL, req.data.nick
+  # If we were given a valid avatar
+  if process.env.BASE_URL? and req.data.avatar and avatars[req.data.avatar]
+    icon = "#{process.env.BASE_URL}/images/avatars/#{avatars[req.data.avatar]}.jpg"
+    slack.postMessage req.data.message, process.env.SLACK_CHANNEL, req.data.nick, icon
+  else
+    slack.postMessage req.data.message, process.env.SLACK_CHANNEL, req.data.nick
   # Store message in memory
   messages.push req.data
 

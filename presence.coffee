@@ -3,7 +3,7 @@ rtm = require('slack-utils/rtm')(process.env.API_TOKEN)
 online = []
 
 rtm.on 'active', (username)->
-  online.push username
+  online.push username if username not in online
 
 rtm.on 'away', (username)->
   index = online.indexOf username

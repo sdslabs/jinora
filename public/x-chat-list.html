@@ -1,0 +1,114 @@
+<!--
+A single user list with a username, avatar, and desc.
+##### Example
+    <x-chat-list avatar="url" username="name" message="hello" status="online" timestamp="1420145273945"></x-chat-list>
+-->
+<script src="bower_components/time-elements/time-elements.js"></script>
+<polymer-element name="x-chat-list" attributes="avatar color username text status timestamp">
+  <template>
+    <style>
+    :host {
+        display: block;
+        position: relative;
+        width: 100%;
+        border-bottom: 1px solid #e0e0e0;
+        font-size: 16px;
+        min-height: 72px;
+        z-index: 0;
+    }
+    .user-list {
+        padding: 16px;
+    }
+    .avatar {
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        margin: 0 16px 0 0;
+        background: #9e9e9e url(lion.png) center center no-repeat;
+        background-size: contain;
+        position: relative;
+    }
+    .status {
+        position: absolute;
+        bottom: -3px;
+        right: -3px;
+        border-radius: 50%;
+        width: 14px;
+        height: 14px;
+        background-color: #7EDF25;
+        display: none;
+    }
+    .status.online {
+        display: block;
+    }
+    .username {
+        text-transform: capitalize;
+        font-weight: 500;
+        color: #919191;
+        line-height: 1.3em;
+        max-width: 90%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .timestamp {
+        font-size: 0.75em;
+        color: #919191;
+    }
+    .avatar {
+        border: solid 3px silver;
+    }
+    .avatar.navy {
+        border-color: #393b79;
+    }
+    .avatar.slate {
+        border-color: #6b6ecf;
+    }
+    .avatar.olive {
+        border-color: #637939;
+    }
+    .avatar.moss {
+        border-color: #b5cf6b;
+    }
+    .avatar.chocolate {
+        border-color: #8c6d31;
+    }
+    .avatar.buttercup {
+        border-color: #e7ba52;
+    }
+    .avatar.maroon {
+        border-color: #843c39;
+    }
+    .avatar.cerise {
+        border-color: #d6616b;
+    }
+    .avatar.plum {
+        border-color: #7b4173;
+    }
+    .avatar.orchid {
+        border-color: #ce6dbd;
+    }
+    </style>
+
+    <section class="user-list" layout horizontal>
+        <div class="avatar {{color}}" style="background-image: url({{avatar}})">
+            <div class="status {{status}}"></div>
+        </div>
+        <div flex>
+            <div class="username">{{username}}</div>
+            <div class="text">{{text}}</div>
+        </div>
+        <time class="timestamp" is="relative-time" datetime="{{timestamp}}"></time>
+    </section>
+</template>
+<script>
+Polymer('x-chat-list', {
+    avatar: '',
+    color: '',
+    username: '',
+    text: '',
+    status: '',
+    timestamp: new Date().toISOString(),
+});
+</script>
+</polymer-element>

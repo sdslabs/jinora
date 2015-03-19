@@ -23,6 +23,19 @@ sendMessage = (msg)->
     avatar: avatar
     color: color
 
+parseMessage = (msg)->
+  msg.timestamp = new Date(msg.timestamp).toISOString();
+  msg.avatar = "images/avatars/#{avatars[msg.avatar]}.jpg" if Number.isInteger msg.avatar
+  msg.color = colors[msg.color] if msg.color?
+  msg
+
+showMessage = (msg)->
+  msg = parseMessage msg
+  template.messages.push msg
+  template.async ()->
+    chatDiv = document.querySelector('.chat-list');
+    chatDiv.scrollTop = chatDiv.scrollHeight;
+
 template.sendMyMessage = (msg) ->
   sendMessage(msg)
 
@@ -47,21 +60,11 @@ socket.on 'connect', ->
   socket.emit 'chat:demand'
   socket.emit 'presence:demand'
 
-socket.on 'chat:msg', (data)->
-  data.timestamp = new Date(data.timestamp).toISOString();
-  data.avatar = "images/avatars/#{avatars[data.avatar]}.jpg" if Number.isInteger data.avatar
-  data.color = colors[data.color] if data.color?
-  template.messages.push data
-  template.async ()->
-    chatDiv = document.querySelector('.chat-list');
-    chatDiv.scrollTop = chatDiv.scrollHeight;
+socket.on 'chat:msg', (msg)->
+  showMessage msg
 
 socket.on 'chat:log', (log)->
-  log.map (msg)->
-    msg.avatar = "images/avatars/#{avatars[msg.avatar]}.jpg" if Number.isInteger msg.avatar
-    msg.color = colors[msg.color] if msg.color?
-    msg.timestamp = new Date(msg.timestamp).toISOString();
-    template.messages.push msg
+  log.map showMessage
 
 socket.on 'presence:list', (list)->
   template.users = list

@@ -52,6 +52,9 @@ socket.on 'chat:msg', (data)->
   data.avatar = "images/avatars/#{avatars[data.avatar]}.jpg" if Number.isInteger data.avatar
   data.color = colors[data.color] if data.color?
   template.messages.push data
+  template.async ()->
+    chatDiv = document.querySelector('.chat-list');
+    chatDiv.scrollTop = chatDiv.scrollHeight;
 
 socket.on 'chat:log', (log)->
   log.map (msg)->

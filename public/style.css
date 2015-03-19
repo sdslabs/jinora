@@ -16,6 +16,8 @@ core-scaffold::shadow core-toolbar {
 }
 core-icon[icon=account-circle] {
     margin-right: 3px;
+    align-self: flex-end;
+    -webkit-align-self: flex-end;
 }
 paper-input {
     padding-right: 10px;

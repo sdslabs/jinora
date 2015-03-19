@@ -93,4 +93,18 @@ BASE_URL=https://jinora.herokuapp.com #Replace this with your base url
 Jinora is licenced under the [MIT Licence](http://nemo.mit-license.org/).
 
 ##Credits
-- Artwork by [peachei.deviantart.com](http://peachei.deviantart.com/art/Older-Jinora-317463839)
+Artwork by [peachei.deviantart.com](http://peachei.deviantart.com/art/Older-Jinora-317463839)
+
+List of cat avatars used:
+
+- Bengal: Tyler T CC BY-SA 3.0
+- Siamese: Karin Langner-Bahmann CC BY-SA 3.0
+- Sphinx: Christopher Voelker CC-BY-3.0
+- Ragdoll: Simone Johnsson CC BY-SA 2.0
+- Persian: UnionMaminia CC BY-SA 3.0
+- Korat: Heikkisiltala CC BY-SA 3.0
+- Japanese Bobtail: ようてい CC BY-SA 3.0
+- Abyssinian: Karin Langner-Bahmann CC BY-SA 3.0
+- Scottish Fold: Vladimir Chubarov CC BY-SA 3.0
+
+The polymer source is based on [paper-chat](https://github.com/pubnub/paper-chat) by pubnub.

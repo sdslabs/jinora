@@ -3,3 +3,4 @@ node_modules/
 *.js
 tests/*.js
 bower_components/
+slack_irc_config.json

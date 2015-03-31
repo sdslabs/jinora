@@ -89,6 +89,10 @@ BASE_URL=https://jinora.herokuapp.com #Replace this with your base url
 3. Push the update.
 4. You can remove the old `INCOMING_TOKEN` config.
 
+##IRC
+
+To add IRC hook from your irc channel copy sample.slack_irc_config.json to slack_irc_config.json and modify accordingly
+
 ##Licence
 Jinora is licenced under the [MIT Licence](http://nemo.mit-license.org/).
 

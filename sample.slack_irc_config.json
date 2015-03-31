@@ -1,0 +1,15 @@
+[
+  {
+    "nickname": "random_bot",
+    "server": "irc.freenode.org",
+    "token": "",
+    "autoSendCommands": [
+        ["PRIVMSG", "NickServ", "IDENTIFY password"],
+        ["MODE", "test", "+x"],
+        ["AUTH", "test", "password"]
+    ],
+    "channelMapping": {
+      "#irc-channelr": "#public"
+    }
+  }
+]

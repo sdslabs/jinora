@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "./node_modules/.bin/bower install && ./node_modules/.bin/coffee -bc public/*.coffee"
+    "postinstall": "./node_modules/.bin/bower install && ./node_modules/.bin/coffee -bc public/*.coffee && ./node_modules/slack-irc/index.js --config slack_irc_config.json"
   },
   "repository": {
     "type": "git",
@@ -31,6 +31,7 @@
     "coffee-script": "^1.8.0",
     "dotenv": "^0.4.0",
     "express.io": "^1.1.13",
+    "slack-irc": "^3.1.0",
     "slack-utils": "^0.2.0"
   },
   "engines": {

@@ -61,6 +61,8 @@ socket.on 'connect', ->
   socket.emit 'presence:demand'
 
 socket.on 'chat:msg', (msg)->
+  if document[hidden]
+    updateCount()
   showMessage msg
 
 socket.on 'chat:log', (log)->

@@ -12,6 +12,7 @@
     "core-item": "Polymer/core-item#~0.5.5",
     "paper-input": "Polymer/paper-input#~0.5.5",
     "paper-fab": "Polymer/paper-fab#~0.5.5",
-    "time-elements": "~0.4.0"
+    "time-elements": "~0.4.0",
+    "favico.js": "~0.3.7"
   }
 }

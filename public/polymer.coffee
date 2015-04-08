@@ -61,8 +61,12 @@ socket.on 'connect', ->
   socket.emit 'presence:demand'
 
 socket.on 'chat:msg', (msg)->
+<<<<<<< HEAD
   if document[hidden]
     updateCount()
+=======
+  Notify.update()
+>>>>>>> 5fe6f5897c46301fb11826053b42bda1de7174ff
   showMessage msg
 
 socket.on 'chat:log', (log)->

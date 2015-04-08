@@ -16,6 +16,7 @@ template.messages = []
 template.users = []
 template.userName = prompt('Enter your username')
 
+
 sendMessage = (msg)->
   socket.emit 'chat:msg',
     message: msg

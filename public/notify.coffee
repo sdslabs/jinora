@@ -1,10 +1,19 @@
-class Notify
-  @update: ()->
-    @favicon.badge ++@count if document[@visibilityEvent.property]
+class window.Notify
 
+  @update: ()->
+   ++@count if document[@visibilityEvent.property]
+   if @Supported
+      @favicon.badge @count
+   else
+        document.title '(' + @count+ ') New Messsages'
+        
+    
   @clear: ()->
     @count = 0
-    @favicon.reset()
+    if @Supported
+      @favicon.reset()
+    else 
+      document.title 'Chat with SDSLabs'
 
   # This is called
   # whenever visibility is changed
@@ -13,12 +22,16 @@ class Notify
 
   @setup: ()->
     @count = 0
-    @favicon = new Favico
-      animation: 'popFade'
-      bgColor: '#d00'
-      textColor: '#fff'
-      fontFamily: 'Arial'
-      fontStyle: 'bold'
+    @Supported = true
+    if bowser.msie && bowser.version <=10
+      @Supported= false
+    if @Supported
+      @favicon = new Favico
+        animation: 'popFade'
+        bgColor: '#d00'
+        textColor: '#fff'
+        fontFamily: 'Arial'
+        fontStyle: 'bold'
 
     visibilityChangeProperty =
       hidden: 'visibilitychange', # Opera 12.10 and Firefox 18 and later support

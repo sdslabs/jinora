@@ -3,7 +3,7 @@ socket = io.connect document.location.origin,
   reconnectionDelay: 200
   reconnectionDelayMax: 1000
 
-avatars = ['tabby', 'bengal', 'persian', 'mainecoon', 'ragdoll', 'sphynx', 'siamese', 'korat', 'japanesebobtail', 'abyssinian', 'scottishfold']
+avatars = ['tabby', 'bengal', 'persian', 'mainecoon', 'ragdoll', 'sphynx', 'siamese', 'korat', 'japanesebobtail', 'abyssinian', 'scottishfold', 'orangeandwhite'].sort()
 colors = ['navy', 'slate', 'olive', 'moss', 'chocolate', 'buttercup', 'maroon', 'cerise', 'plum', 'orchid']
 
 avatar = (Math.random() * avatars.length) >>> 0

@@ -4,13 +4,20 @@ if process.env.NODE_ENV != 'production'
   dotenv.load()
 
 express = require('express.io')
+fs = require('fs')
+path = require('path')
 CBuffer = require('CBuffer');
 slack = require('slack-utils/api')(process.env.API_TOKEN, process.env.INCOMING_HOOK_URL)
 presence = require('./presence.coffee')
 rate_limit = require('./rate_limit.coffee')
 app = express().http().io()
+
 # This is a circular buffer of messages, which are stored in memory
 messages = new CBuffer(parseInt(process.env.BUFFER_SIZE))
+
+# Note that this is a sorted list
+avatars = fs.readdirSync('./public/images/avatars').map (filename)->
+  path.basename(filename, '.jpg')
 
 # Setup your sessions, just like normal.
 app.use express.cookieParser()
@@ -61,8 +68,6 @@ app.io.route 'chat:msg', (req)->
   else
     # Send the message to all jinora users
     app.io.broadcast 'chat:msg', req.data
-
-  avatars = ['tabby', 'bengal', 'persian', 'mainecoon', 'ragdoll', 'sphynx', 'siamese', 'korat', 'japanesebobtail', 'abyssinian', 'scottishfold']
 
   # Send message to slack
   # If we were given a valid avatar

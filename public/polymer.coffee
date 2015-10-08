@@ -36,17 +36,20 @@ showMessage = (msg)->
     chatDiv = document.querySelector('.chat-list');
     chatDiv.scrollTop = chatDiv.scrollHeight;
 
-template.sendMyMessage = (msg) ->
-  sendMessage(msg)
+template.sendMyMessage = () ->
+  $input = $("#input")
+  
+  if socket.socket.connected === false
+    alert 'Please wait while we reconnect'
+  else if $input.val().trim() !== ''
+    sendMessage $input.val()
+    $input.val ''
+
+
 
 template.checkKey = (e) ->
-  $input = $(e.target)
-  if e.which == 13
-    if socket.socket.connected == false
-      alert 'Please wait while we reconnect'
-    else if $input.val().trim() != ''
-      sendMessage $input.val()
-      $input.val ''
+  if e.which === 13
+      template.sendMyMessage()
   e.preventDefault()
 
 socket.on 'disconnect', ->

@@ -39,16 +39,16 @@ showMessage = (msg)->
 template.sendMyMessage = () ->
   $input = $("#input")
   
-  if socket.socket.connected === false
+  if socket.socket.connected == false
     alert 'Please wait while we reconnect'
-  else if $input.val().trim() !== ''
+  else if $input.val().trim() != ''
     sendMessage $input.val()
     $input.val ''
 
 
 
 template.checkKey = (e) ->
-  if e.which === 13
+  if e.which == 13
       template.sendMyMessage()
   e.preventDefault()
 

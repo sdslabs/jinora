@@ -16,6 +16,7 @@ template.messages = []
 template.users = []
 template.userName = prompt('Enter your username')
 
+
 sendMessage = (msg)->
   socket.emit 'chat:msg',
     message: msg
@@ -64,6 +65,7 @@ socket.on 'connect', ->
   socket.emit 'presence:demand'
 
 socket.on 'chat:msg', (msg)->
+  Notify.update()
   showMessage msg
 
 socket.on 'chat:log', (log)->

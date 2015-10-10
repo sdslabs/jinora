@@ -56,7 +56,12 @@ $(function(){
   socket.on('chat:msg', function(data){
     app.chatHandler(data);
     app.scroll();
+    if(document[hidden])      //if page is hidden updateCount is called
+    {
+      updateCount();
+    }
   });
+
 
   socket.on('chat:log', function(msgs){
     for(i in msgs){

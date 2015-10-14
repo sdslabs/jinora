@@ -60,6 +60,7 @@ app.post "/webhook", (req, res) ->
 # also send it to slack
 app.io.route 'chat:msg', (req)->
   return if rate_limit(req.socket.id)
+  return if (typeof(req.data.message) != "string")
   req.data.timestamp = (new Date).getTime()
 
   # verify if nick is allowed

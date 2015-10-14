@@ -47,7 +47,7 @@ template.sendMyMessage = () ->
 
 template.checkKey = (e) ->
   if e.which == 13
-      template.sendMyMessage()
+    template.sendMyMessage()
   e.preventDefault()
 
 socket.on 'disconnect', ->
@@ -62,7 +62,7 @@ socket.on 'connect', ->
   socket.emit 'presence:demand'
 
 socket.on 'chat:msg', (msg)->
-  if msg.nick == ""
+  if msg.status['session'] and !msg.status['nick']
     msg.nick = template.userName = prompt 'Sorry! You can\'t have this username. \nPlease enter another username'
     return
   showMessage msg

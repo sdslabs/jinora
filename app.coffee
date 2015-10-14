@@ -10,8 +10,8 @@ CBuffer = require('CBuffer');
 slack = require('slack-utils/api')(process.env.API_TOKEN, process.env.INCOMING_HOOK_URL)
 presence = require('./presence.coffee')
 rate_limit = require('./rate_limit.coffee')
-app = express().http().io()
 user = require('./user.coffee')
+app = express().http().io()
 
 # This is a circular buffer of messages, which are stored in memory
 messages = new CBuffer(parseInt(process.env.BUFFER_SIZE))
@@ -55,12 +55,24 @@ app.post "/webhook", (req, res) ->
   # Send a blank response, so slack knows we got it.
   res.send ""
 
-app.post "/user/nick/ban", (req, res) ->
+# Ban the nick
+app.post "/user/nick/ban", (req, res)->
   throw "Invalid Token" unless req.body.token == process.env.OUTGOING_TOKEN_BOT
 
-  if user.ban_nick(req.body.nick)
+  if user.ban_nick req.body.nick
     res.send "ok"
     return
+
+  res.send "error!"
+
+# Ban the session
+app.post "/user/session/ban", (req, res)->
+  throw "Invalid Token" unless req.body.token == process.env.OUTGOING_TOKEN_BOT
+
+  if user.ban_session req.body.nick
+    res.send "ok"
+    return
+
   res.send "error!"
 
 # Broadcast the chat message to all connected clients,
@@ -68,12 +80,12 @@ app.post "/user/nick/ban", (req, res) ->
 # also send it to slack
 app.io.route 'chat:msg', (req)->
   return if rate_limit(req.socket.id)
-  return if (typeof(req.data.message) != "string")
+  return if typeof req.data.message != "string"
   req.data.timestamp = (new Date).getTime()
 
-  # verify if nick is allowed
-  if user.verify_user(req.data.nick) == false
-    req.data.nick = ""
+  # Get user's auth status and don't send to other users and jinora if the user is not authenticated properly
+  req.data.status = user.verify req.data.nick, req.cookies['connect.sid']
+  if !req.data.status['session'] or !req.data.status['nick']
     req.io.emit 'chat:msg', req.data
     return
 

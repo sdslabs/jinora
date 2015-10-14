@@ -10,6 +10,7 @@ CBuffer = require('CBuffer');
 slack = require('slack-utils/api')(process.env.API_TOKEN, process.env.INCOMING_HOOK_URL)
 presence = require('./presence.coffee')
 rate_limit = require('./rate_limit.coffee')
+user = require('./user.coffee')
 app = express().http().io()
 
 # This is a circular buffer of messages, which are stored in memory
@@ -38,13 +39,25 @@ app.post "/webhook", (req, res) ->
   if slack.userInfoById(req.body.user_id)
     avatar = slack.userInfoById(req.body.user_id)['profile']['image_72']
 
+  message = slack.parseMessage(req.body.text)
+
   # Broadcast the message to all clients
   msg =
-    message: slack.parseMessage(req.body.text),
+    message: message,
     nick: req.body.user_name,
     classes: "admin",
     timestamp: Math.floor(req.body.timestamp*1000)
     avatar: avatar
+
+  privateMsg = if message[0] == "!" then true else false
+  if privateMsg
+    tempMessage = msg.message.substr(1)
+    adminNick = msg.nick
+    slackMessage = user.interpret(tempMessage, adminNick)
+
+    res.send ""
+    slack.postMessage slackMessage, process.env.SLACK_CHANNEL, "admin"
+    return
 
   app.io.broadcast "chat:msg", msg
 
@@ -59,11 +72,22 @@ app.post "/webhook", (req, res) ->
 # also send it to slack
 app.io.route 'chat:msg', (req)->
   return if rate_limit(req.socket.id)
-  return if (typeof(req.data.message) != "string")
+  return if typeof req.data.message != "string"
   req.data.timestamp = (new Date).getTime()
+  req.data.status = user.verify req.data.nick, req.cookies['connect.sid']
 
+  slackChannel = process.env.SLACK_CHANNEL
+
+  # If the nick is reserved
+  if !req.data.status['nick']
+    req.io.emit 'chat:msg', req.data
+    return
+  # If the session is banned
+  else if !req.data.status['session']
+    req.io.emit 'chat:msg', req.data
+    slackChannel = process.env.BANNED_CHANNEL
   # If the message is private
-  if req.data.message[0] == '!'
+  else if req.data.message[0] == '!'
     req.data.private = true
     req.io.emit 'chat:msg', req.data
   else
@@ -74,9 +98,9 @@ app.io.route 'chat:msg', (req)->
   # If we were given a valid avatar
   if process.env.BASE_URL? and req.data.avatar and avatars[req.data.avatar]
     icon = "#{process.env.BASE_URL}/images/avatars/#{avatars[req.data.avatar]}.jpg"
-    slack.postMessage req.data.message, process.env.SLACK_CHANNEL, req.data.nick, icon
+    slack.postMessage req.data.message, slackChannel, req.data.nick, icon
   else
-    slack.postMessage req.data.message, process.env.SLACK_CHANNEL, req.data.nick
+    slack.postMessage req.data.message, slackChannel, req.data.nick
   # Store message in memory
   messages.push req.data
 

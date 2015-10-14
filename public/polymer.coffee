@@ -5,6 +5,7 @@ socket = io.connect document.location.origin,
 
 avatars = ['tabby', 'bengal', 'persian', 'mainecoon', 'ragdoll', 'sphynx', 'siamese', 'korat', 'japanesebobtail', 'abyssinian', 'scottishfold', 'orangeandwhite'].sort()
 colors = ['navy', 'slate', 'olive', 'moss', 'chocolate', 'buttercup', 'maroon', 'cerise', 'plum', 'orchid']
+defaultNames = ["Killer Whale", "Giraffe", "Rabbit", "Polar Bear", "Cheetah", "Snow Leopard", "Eagle", "Fox", "Panda", "Salamander", "Jackal", "Elephant ", "Lion", "Horse", "Monkey", "Penguin ", "Wolf", "Dolphin", "Tiger", "Cat"]
 
 avatar = (Math.random() * avatars.length) >>> 0
 color  = (Math.random() * colors.length) >>> 0
@@ -14,7 +15,7 @@ template.color  = colors[color]
 template.status = 'connected'
 template.messages = []
 template.users = []
-template.userName = prompt('Enter your username')
+template.userName = prompt 'Enter your username'
 
 sendMessage = (msg)->
   socket.emit 'chat:msg',
@@ -49,7 +50,7 @@ template.sendMyMessage = () ->
 
 template.checkKey = (e) ->
   if e.which == 13
-      template.sendMyMessage()
+    template.sendMyMessage()
   e.preventDefault()
 
 socket.on 'disconnect', ->
@@ -64,7 +65,14 @@ socket.on 'connect', ->
   socket.emit 'presence:demand'
 
 socket.on 'chat:msg', (msg)->
-  showMessage msg
+  defaultName = defaultNames[(Math.random() * defaultNames.length) >>> 0]
+  if msg.status and msg.status['nick'] == false
+    setTimeout () ->
+      msg.nick = template.userName = prompt('Sorry! You can\'t have this username.\nPlease enter another username', defaultName) or defaultName
+      sendMessage msg.message
+    , 1000
+  else
+    showMessage msg
 
 socket.on 'chat:log', (log)->
   log.map showMessage

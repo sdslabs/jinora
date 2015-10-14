@@ -11,6 +11,7 @@ slack = require('slack-utils/api')(process.env.API_TOKEN, process.env.INCOMING_H
 presence = require('./presence.coffee')
 rate_limit = require('./rate_limit.coffee')
 app = express().http().io()
+verifyNick = require('./user.coffee')
 
 # This is a circular buffer of messages, which are stored in memory
 messages = new CBuffer(parseInt(process.env.BUFFER_SIZE))
@@ -60,6 +61,12 @@ app.post "/webhook", (req, res) ->
 app.io.route 'chat:msg', (req)->
   return if rate_limit(req.socket.id)
   req.data.timestamp = (new Date).getTime()
+
+  # verify if nick is allowed
+  if verifyNick(req.data.nick) == false
+    req.data.nick = ""
+    req.io.emit 'chat:msg', req.data
+    return
 
   # If the message is private
   if req.data.message[0] == '!'

@@ -81,14 +81,19 @@ app.io.route 'chat:msg', (req)->
   return if typeof req.data.message != "string"
   req.data.timestamp = (new Date).getTime()
 
-  # Get user's auth status and don't send to other users and jinora if the user is not authenticated properly
   req.data.status = user.verify req.data.nick, req.cookies['connect.sid']
-  if !req.data.status['session'] or !req.data.status['nick']
+  slackChannel = process.env.SLACK_CHANNEL
+
+  # If the nick is reserved
+  if !req.data.status['nick']
     req.io.emit 'chat:msg', req.data
     return
-
+  # If the session is banned
+  else if !req.data.status['session']
+    req.io.emit 'chat:msg', req.data
+    slackChannel = process.env.BANNED_CHANNEL
   # If the message is private
-  if req.data.message[0] == '!'
+  else if req.data.message[0] == '!'
     req.data.private = true
     req.io.emit 'chat:msg', req.data
   else
@@ -99,9 +104,9 @@ app.io.route 'chat:msg', (req)->
   # If we were given a valid avatar
   if process.env.BASE_URL? and req.data.avatar and avatars[req.data.avatar]
     icon = "#{process.env.BASE_URL}/images/avatars/#{avatars[req.data.avatar]}.jpg"
-    slack.postMessage req.data.message, process.env.SLACK_CHANNEL, req.data.nick, icon
+    slack.postMessage req.data.message, slackChannel, req.data.nick, icon
   else
-    slack.postMessage req.data.message, process.env.SLACK_CHANNEL, req.data.nick
+    slack.postMessage req.data.message, slackChannel, req.data.nick
   # Store message in memory
   messages.push req.data
 

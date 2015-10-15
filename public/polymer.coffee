@@ -62,10 +62,11 @@ socket.on 'connect', ->
   socket.emit 'presence:demand'
 
 socket.on 'chat:msg', (msg)->
-  if msg.status['session'] and !msg.status['nick']
+  if !msg.status['nick']
     msg.nick = template.userName = prompt 'Sorry! You can\'t have this username. \nPlease enter another username'
-    return
-  showMessage msg
+    sendMessage msg.message
+  else
+    showMessage msg
 
 socket.on 'chat:log', (log)->
   log.map showMessage

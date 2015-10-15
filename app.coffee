@@ -61,9 +61,8 @@ app.post "/user/nick/ban", (req, res)->
 
   if user.banNick req.body.nick
     res.send "ok"
-    return
-
-  res.send "error!"
+  else
+    res.send "error!"
 
 # Ban the session
 app.post "/user/session/ban", (req, res)->
@@ -71,9 +70,8 @@ app.post "/user/session/ban", (req, res)->
 
   if user.banSession req.body.nick
     res.send "ok"
-    return
-
-  res.send "error!"
+  else
+    res.send "error!"
 
 # Broadcast the chat message to all connected clients,
 # including the one who made the request

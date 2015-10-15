@@ -14,7 +14,7 @@ template.color  = colors[color]
 template.status = 'connected'
 template.messages = []
 template.users = []
-template.userName = prompt('Enter your username')
+template.userName = prompt 'Enter your username'
 
 sendMessage = (msg)->
   socket.emit 'chat:msg',
@@ -45,8 +45,6 @@ template.sendMyMessage = () ->
     sendMessage $input.val()
     $input.val ''
 
-
-
 template.checkKey = (e) ->
   if e.which == 13
       template.sendMyMessage()
@@ -64,6 +62,9 @@ socket.on 'connect', ->
   socket.emit 'presence:demand'
 
 socket.on 'chat:msg', (msg)->
+  if msg.nick == ""
+    msg.nick = template.userName = prompt 'Sorry! You can\'t have this username. \nPlease enter another username'
+    return
   showMessage msg
 
 socket.on 'chat:log', (log)->

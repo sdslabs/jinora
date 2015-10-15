@@ -3,3 +3,4 @@ node_modules/
 *.js
 tests/*.js
 bower_components/
+reserved_nicks

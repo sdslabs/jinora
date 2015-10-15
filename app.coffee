@@ -57,7 +57,7 @@ app.post "/webhook", (req, res) ->
 
 # Ban the nick
 app.post "/user/nick/ban", (req, res)->
-  throw "Invalid Token" unless req.body.token == process.env.OUTGOING_TOKEN_BOT
+  throw "Invalid Token" unless req.body.token == process.env.ADMIN_TOKEN
 
   if user.ban_nick req.body.nick
     res.send "ok"
@@ -67,7 +67,7 @@ app.post "/user/nick/ban", (req, res)->
 
 # Ban the session
 app.post "/user/session/ban", (req, res)->
-  throw "Invalid Token" unless req.body.token == process.env.OUTGOING_TOKEN_BOT
+  throw "Invalid Token" unless req.body.token == process.env.ADMIN_TOKEN
 
   if user.ban_session req.body.nick
     res.send "ok"

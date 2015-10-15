@@ -1,12 +1,12 @@
 fs = require('fs')
 
 reservedNicks = fs.readFileSync('reserved_nicks').toString().trim().split('\n')
-nick_session_map = {}
-banned_sessions = []
+nickSessionMap = {}
+bannedSessions = []
 status = {}
 
 # Verify the nick of user
-verify_nick = (nick)->
+verifyNick = (nick)->
   if nick == null or nick == ""
     return false
 
@@ -17,11 +17,11 @@ verify_nick = (nick)->
   return true
 
 # Verify the session of user
-verify_session = (session_id)->
-  if session_id == null or session_id == undefined or session_id == ""
+verifySession = (sessionId)->
+  if sessionId == null or sessionId == undefined or sessionId == ""
     return false
 
-  if session_id in banned_sessions
+  if sessionId in bannedSessions
     return false
 
   return true
@@ -29,7 +29,7 @@ verify_session = (session_id)->
 
 module.exports = {
   # Ban nick when nick is posted to /user/nick/ban
-  ban_nick: (nick)->
+  banNick: (nick)->
     if nick == null or nick == undefined or nick == ""
       return false
 
@@ -40,21 +40,21 @@ module.exports = {
     return true
 
   # Ban session when nick is posted to /user/session/ban
-  ban_session: (nick)->
+  banSession: (nick)->
     if nick == null or nick == undefined or nick == ""
       return false
 
-    if nick_session_map[nick] != undefined
-      banned_sessions.push nick_session_map[nick] if banned_sessions[nick_session_map[nick]] == undefined
+    if nickSessionMap[nick] != undefined
+      bannedSessions.push nickSessionMap[nick] if bannedSessions[nickSessionMap[nick]] == undefined
       return true
     
     return false
 
   # Verify and return the auth status
-  verify: (nick, session_id)->
-    nick_session_map[nick] = session_id
-    status['nick'] = verify_nick(nick)
-    status['session'] = verify_session(session_id)
+  verify: (nick, sessionId)->
+    nickSessionMap[nick] = sessionId
+    status['nick'] = verifyNick(nick)
+    status['session'] = verifySession(sessionId)
 
     return status
 

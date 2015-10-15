@@ -59,7 +59,7 @@ app.post "/webhook", (req, res) ->
 app.post "/user/nick/ban", (req, res)->
   throw "Invalid Token" unless req.body.token == process.env.ADMIN_TOKEN
 
-  if user.ban_nick req.body.nick
+  if user.banNick req.body.nick
     res.send "ok"
     return
 
@@ -69,7 +69,7 @@ app.post "/user/nick/ban", (req, res)->
 app.post "/user/session/ban", (req, res)->
   throw "Invalid Token" unless req.body.token == process.env.ADMIN_TOKEN
 
-  if user.ban_session req.body.nick
+  if user.banSession req.body.nick
     res.send "ok"
     return
 

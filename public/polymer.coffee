@@ -5,6 +5,7 @@ socket = io.connect document.location.origin,
 
 avatars = ['tabby', 'bengal', 'persian', 'mainecoon', 'ragdoll', 'sphynx', 'siamese', 'korat', 'japanesebobtail', 'abyssinian', 'scottishfold', 'orangeandwhite'].sort()
 colors = ['navy', 'slate', 'olive', 'moss', 'chocolate', 'buttercup', 'maroon', 'cerise', 'plum', 'orchid']
+defaultNames = ["Killer Whale", "Giraffe", "Rabbit", "Polar Bear", "Cheetah", "Snow Leopard", "Eagle", "Fox", "Panda", "Salamander", "Jackal", "Elephant ", "Lion", "Horse", "Monkey", "Penguin ", "Wolf", "Dolphin", "Tiger", "Cat"]
 
 avatar = (Math.random() * avatars.length) >>> 0
 color  = (Math.random() * colors.length) >>> 0
@@ -62,8 +63,9 @@ socket.on 'connect', ->
   socket.emit 'presence:demand'
 
 socket.on 'chat:msg', (msg)->
+  defaultName = defaultNames[(Math.random() * defaultNames.length) >>> 0]
   if !msg.status['nick']
-    msg.nick = template.userName = prompt 'Sorry! You can\'t have this username. \nPlease enter another username'
+    msg.nick = template.userName = defaultName if !prompt 'Sorry! You can\'t have this username. \nPlease enter another username', defaultName
     sendMessage msg.message
   else
     showMessage msg

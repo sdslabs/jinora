@@ -6,7 +6,7 @@ bannedSessions = []
 status = {}
 
 # Verify the nick of user
-verifyNick = (nick)->
+verifyNick = (nick) ->
   return false if !nick
 
   nick = nick.toLowerCase()
@@ -18,7 +18,7 @@ verifyNick = (nick)->
   return true
 
 # Verify the session of user
-verifySession = (sessionId)->
+verifySession = (sessionId) ->
   return false if !sessionId
 
   return false if sessionId in bannedSessions
@@ -27,8 +27,7 @@ verifySession = (sessionId)->
 
 
 module.exports = {
-  # Ban nick when nick is posted to /user/nick/ban
-  banNick: (nick)->
+  banNick: (nick) ->
     return false if !nick
     return true if !verifyNick nick
 
@@ -41,8 +40,7 @@ module.exports = {
 
     return true
 
-  # Ban session when nick is posted to /user/session/ban
-  banSession: (nick)->
+  banSession: (nick) ->
     return false if !nick
 
     nick = nick.toLowerCase()
@@ -50,11 +48,36 @@ module.exports = {
     if nickSessionMap[nick]
       bannedSessions.push nickSessionMap[nick] if nickSessionMap[nick] not in bannedSessions
       return true
-    
+
+    return false
+
+  unbanNick: (nick) ->
+    return false if !nick
+
+    nick = nick.toLowerCase()
+
+    if nick in reservedNicks
+      reservedNicks.pop nick
+      fs.writeFile 'reserved_nicks', reservedNicks.join('\n')+'\n', (err) ->
+        return false if err
+      return true
+
+    return false
+
+  unbanSession: (nick) ->
+    return false if !nick
+
+    nick = nick.toLowerCase()
+
+    if nickSessionMap[nick]
+      bannedSessions.pop nickSessionMap[nick] if nickSessionMap[nick] in bannedSessions
+      return true
+
     return false
 
   # Verify and return the auth status
-  verify: (nick, sessionId)->
+  verify: (nick, sessionId) ->
+    nick = nick.toLowerCase()
     nickSessionMap[nick] = sessionId
     status['nick'] = verifyNick(nick)
     status['session'] = verifySession(sessionId)

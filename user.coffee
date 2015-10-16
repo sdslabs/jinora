@@ -7,22 +7,21 @@ status = {}
 
 # Verify the nick of user
 verifyNick = (nick)->
-  if !nick
-    return false
+  return false if !nick
+
+  nick = nick.toLowerCase()
 
   for reservedNick in reservedNicks
-    if nick.toLowerCase().indexOf(reservedNick) != -1
+    if nick.indexOf(reservedNick) != -1
       return false
 
   return true
 
 # Verify the session of user
 verifySession = (sessionId)->
-  if !sessionId
-    return false
+  return false if !sessionId
 
-  if sessionId in bannedSessions
-    return false
+  return false if sessionId in bannedSessions
 
   return true
 
@@ -30,19 +29,23 @@ verifySession = (sessionId)->
 module.exports = {
   # Ban nick when nick is posted to /user/nick/ban
   banNick: (nick)->
-    if !nick
-      return false
+    return false if !nick
+    return true if !verifyNick nick
+
+    nick = nick.toLowerCase()
 
     fs.appendFile 'reserved_nicks', nick + "\n", (err)->
       return false if err
+
     reservedNicks.push nick
 
     return true
 
   # Ban session when nick is posted to /user/session/ban
   banSession: (nick)->
-    if !nick
-      return false
+    return false if !nick
+
+    nick = nick.toLowerCase()
 
     if nickSessionMap[nick]
       bannedSessions.push nickSessionMap[nick] if nickSessionMap[nick] not in bannedSessions

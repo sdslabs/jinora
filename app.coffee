@@ -39,14 +39,34 @@ app.post "/webhook", (req, res) ->
   if slack.userInfoById(req.body.user_id)
     avatar = slack.userInfoById(req.body.user_id)['profile']['image_72']
 
+  message = slack.parseMessage(req.body.text)
+
   # Broadcast the message to all clients
   msg =
-    message: slack.parseMessage(req.body.text),
+    message: message,
     nick: req.body.user_name,
     classes: "admin",
     timestamp: Math.floor(req.body.timestamp*1000)
     avatar: avatar
+    private: if message[0] == "!" then true else false
 
+
+  if msg.private
+    tempMessage = msg.message.toLowerCase()
+
+    if tempMessage[1..9] == "ban nick "
+      nick = msg.message[10..]
+      if user.banNick nick then slackMessage = "#{msg.nick} just banned nick #{nick}" else slackMessage = "Error while banning nick #{nick}"
+    else if tempMessage[1..9] == "ban user "
+      nick = msg.message[10..]
+      if user.banSession nick then slackMessage = "#{msg.nick} just shadow-banned user #{nick}" else slackMessage = "Error while shadow-banning user #{nick}"
+    else
+      slackMessage = "Invalid command.\nSample commands:\n`!ban nick cat` for banning nick `cat`\n`!ban user cat` for shadow-banning user `cat`"
+    
+    res.send ""
+    slack.postMessage slackMessage, process.env.SLACK_CHANNEL, "admin"
+    return
+    
   app.io.broadcast "chat:msg", msg
 
   # Also store the message in memory
@@ -54,24 +74,6 @@ app.post "/webhook", (req, res) ->
 
   # Send a blank response, so slack knows we got it.
   res.send ""
-
-# Ban the nick
-app.post "/user/nick/ban", (req, res)->
-  throw "Invalid Token" unless req.body.token == process.env.ADMIN_TOKEN
-
-  if user.banNick req.body.nick
-    res.send "ok"
-  else
-    res.send "error!"
-
-# Ban the session
-app.post "/user/session/ban", (req, res)->
-  throw "Invalid Token" unless req.body.token == process.env.ADMIN_TOKEN
-
-  if user.banSession req.body.nick
-    res.send "ok"
-  else
-    res.send "error!"
 
 # Broadcast the chat message to all connected clients,
 # including the one who made the request

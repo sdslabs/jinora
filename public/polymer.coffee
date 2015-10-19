@@ -65,9 +65,11 @@ socket.on 'connect', ->
 socket.on 'chat:msg', (msg)->
   defaultName = defaultNames[(Math.random() * defaultNames.length) >>> 0]
   if msg.status and msg.status['nick'] == false
-    userPrompt = prompt 'Sorry! You can\'t have this username. \nPlease enter another username', defaultName
-    msg.nick = template.userName = if !userPrompt then defaultName else userPrompt
-    sendMessage msg.message
+    setTimeout () ->
+      userPrompt = prompt 'Sorry! You can\'t have this username.\nPlease enter another username', defaultName
+      msg.nick = template.userName = if !userPrompt then defaultName else userPrompt
+      sendMessage msg.message
+    , 1000
   else
     showMessage msg
 

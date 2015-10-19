@@ -25,74 +25,61 @@ makeSlackMessage = (status, banStatus, type, userNick, adminNick) ->
 
 # Verify the nick of user
 verifyNick = (nick) ->
-  return false if !nick
+  verified = () ->
+    nick = nick.toLowerCase()
+    for reservedNick in reservedNicks
+      if nick.indexOf(reservedNick) != -1
+        return false
+    return true
 
-  nick = nick.toLowerCase()
-
-  for reservedNick in reservedNicks
-    if nick.indexOf(reservedNick) != -1
-      return false
-
-  return true
+  return !!nick and if !verified() then false else true
 
 # Verify the session of user
 verifyUser = (sessionId) ->
-  return false if !sessionId
-  return false if sessionId in bannedSessions
-
-  return true
+  return !!sessionId and if sessionId in bannedSessions then false else true
 
 banFunction = {
   ban: {
     nick: (nick) ->
-      return false if !nick
-      return true if !verifyNick nick
-
-      nick = nick.toLowerCase()
-
-      fs.appendFile 'reserved_nicks', nick + "\n", (err)->
-        return false if err
-
-      reservedNicks.push nick
-
-      return true
+      banned = () ->
+        nick = nick.toLowerCase()
+        fs.appendFile 'reserved_nicks', nick + "\n", (err)->
+          return false if err
+        reservedNicks.push nick
+        return true
+        
+      return !!nick and (!verifyNick(nick) or banned())
 
     user: (nick) ->
-      return false if !nick
+      banned = () ->
+        nick = nick.toLowerCase()
+        if nickSessionMap[nick]
+          bannedSessions.push nickSessionMap[nick] if nickSessionMap[nick] not in bannedSessions
+          return true
 
-      nick = nick.toLowerCase()
-
-      if nickSessionMap[nick]
-        bannedSessions.push nickSessionMap[nick] if nickSessionMap[nick] not in bannedSessions
-        return true
-
-      return false
+      return !!nick and banned()
   }
     
   unban: {
     nick: (nick) ->
-      return false if !nick
+      unbanned = () ->
+        nick = nick.toLowerCase()
+        if nick in reservedNicks
+          reservedNicks.pop nick
+          fs.writeFile 'reserved_nicks', reservedNicks.join('\n')+'\n', (err) ->
+            return false if err
+          return true
 
-      nick = nick.toLowerCase()
-
-      if nick in reservedNicks
-        reservedNicks.pop nick
-        fs.writeFile 'reserved_nicks', reservedNicks.join('\n')+'\n', (err) ->
-          return false if err
-        return true
-
-      return false
+      return !!nick and unbanned()
 
     user: (nick) ->
-      return false if !nick
+      unbanned = () ->
+        nick = nick.toLowerCase()
+        if nickSessionMap[nick]
+          bannedSessions.pop nickSessionMap[nick] if nickSessionMap[nick] in bannedSessions
+          return true
 
-      nick = nick.toLowerCase()
-
-      if nickSessionMap[nick]
-        bannedSessions.pop nickSessionMap[nick] if nickSessionMap[nick] in bannedSessions
-        return true
-
-      return false
+      return !!nick and unbanned()
   }
 
 }
@@ -101,7 +88,7 @@ banFunction = {
 module.exports = {
   # Verify and return the auth status
   verify: (nick, sessionId) ->
-    nick = (nick || "").toLowerCase()
+    nick = (nick or "").toLowerCase()
     nickSessionMap[nick] = sessionId
     status['nick'] = verifyNick(nick)
     status['session'] = verifyUser(sessionId)
@@ -118,12 +105,12 @@ module.exports = {
     banStatus = bans
     if words[0] in bans
       banStatus = [words[0]]
-      userNick = words[2] || ""
+      userNick = words[2] or ""
       if types.hasOwnProperty(words[1])
         type = words[1]
-        commandStatus = eval("banFunction.#{words[0]}.#{type}")(userNick) || "error"
+        commandStatus = eval("banFunction.#{words[0]}.#{type}")(userNick) or "error"
 
-    slackMessage = makeSlackMessage(commandStatus, banStatus, type, userNick, adminNick)
+    slackMessage = makeSlackMessage(commandStatus, banStatus, types[type], userNick, adminNick)
     return slackMessage
 
 }

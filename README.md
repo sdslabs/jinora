@@ -28,6 +28,7 @@ Configuration Options:
 - **API_TOKEN** API Token for the slack team. Generated at <https://api.slack.com/web> (scroll to bottom). Bot users tokens may work, but have not been tested.
 - **BUFFER_SIZE** Number of messages to keep in memory. This is automatically rotated and lost on reboots. Recommended value is 500-1000
 - **SLACK_CHANNEL** Name of slack channel to send messages to. Default is "public".
+- **ADMIN_TOKEN** Custom Token to verify admin requests.
 
 These configuration options can either be provided via a `.env` file in development, or via Heroku config variables, if you are deploying to Heroku. A sample env file is provided in `.env.sample`.
 

@@ -105,7 +105,7 @@ module.exports = {
     banStatus = bans
     if words[0] in bans
       banStatus = [words[0]]
-      userNick = words[2] or ""
+      userNick = words[2..].join(" ") or ""
       if types.hasOwnProperty(words[1])
         type = words[1]
         commandStatus = eval("banFunction.#{words[0]}.#{type}")(userNick) or "error"

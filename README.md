@@ -17,6 +17,7 @@ No more need to having your team monitor IRC or Olark, it can all be done in Sla
 3. Translates all #channel hashtags and user @mentions properly
 4. Messages sent from Slack are highlighted as official
 5. Circular buffer that stores messages in memory (configurable limit)
+6. Supports shadow-banning of users. Also nicks can be reserved by adding them to your [jsonblob](https://jsonblob.com).
 
 ##Setup Instructions
 
@@ -28,7 +29,8 @@ Configuration Options:
 - **API_TOKEN** API Token for the slack team. Generated at <https://api.slack.com/web> (scroll to bottom). Bot users tokens may work, but have not been tested.
 - **BUFFER_SIZE** Number of messages to keep in memory. This is automatically rotated and lost on reboots. Recommended value is 500-1000
 - **SLACK_CHANNEL** Name of slack channel to send messages to. Default is "public".
-- **ADMIN_TOKEN** Custom Token to verify admin requests.
+- **BANNED_CHANNEL** Name of slack channel to send messages from banned users. Default is "public-hell".
+- **RESERVED_NICKS_URL** Link to your jsonblob url `/api/jsonblob/<blobid>`
 
 These configuration options can either be provided via a `.env` file in development, or via Heroku config variables, if you are deploying to Heroku. A sample env file is provided in `.env.sample`.
 
@@ -36,12 +38,15 @@ These configuration options can either be provided via a `.env` file in developm
 1. Create a `#public` channel (could be called anything).
 2. Create an outgoing webhook that listens only on `#public`.
 3. Create an incoming webhook, and note down its URL.
+4. Create a `#public-hell` channel (could be called anything).
 
 Screenshots for a better understanding (outgoing and then incoming):
 
 ![Outgoing Webhook](http://i.imgur.com/dja9jqa.png)
 
 ![Incoming Webhook](http://i.imgur.com/iCDEAok.png)
+
+![JsonBlob Sample](http://i.imgur.com/Cpo3M2i.png)
 
 ##Architecture
 
@@ -74,6 +79,9 @@ Screenshots for a better understanding (outgoing and then incoming):
            +--------------+        
 
 Jinora communicates with slack by means of two webhooks, one incoming and one outgoing. This communication is then broadcasted to all clients connected to Jinora. On the other side, all messages that Jinora receives from any of the user is sent back to Slack.
+
+### How to ban?
+> Read this [wiki](https://github.com/sdslabs/jinora/wiki/Banning-nicks-and-sessions)
 
 #Upgrading
 

@@ -10,8 +10,12 @@ CBuffer = require('CBuffer');
 slack = require('slack-utils/api')(process.env.API_TOKEN, process.env.INCOMING_HOOK_URL)
 presence = require('./presence.coffee')
 rate_limit = require('./rate_limit.coffee')
-user = require('./user.coffee')
 app = express().http().io()
+if !!process.env.RESERVED_NICKS_URL
+  console.log "wtf"
+  user = require('./user.coffee')(slack)
+else
+  console.error "ERROR: banning won't work as RESERVED_NICKS_URL is not provided"
 
 # This is a circular buffer of messages, which are stored in memory
 messages = new CBuffer(parseInt(process.env.BUFFER_SIZE))
@@ -49,16 +53,19 @@ app.post "/webhook", (req, res) ->
     timestamp: Math.floor(req.body.timestamp*1000)
     avatar: avatar
 
-  privateMsg = if message[0] == "!" then true else false
-  if privateMsg
-    tempMessage = msg.message.substr(1)
-    adminNick = msg.nick
-    slackMessage = user.interpret(tempMessage, adminNick)
+  # If RESERVED_NICKS_URL doesn't exist => user = ""
+  if !!typeof(user)
+    privateMsg = if message[0] == "!" then true else false
+    # If the message is not meant to be sent to jinora users, but to be interpreted by jinora
+    if privateMsg
+      tempMessage = msg.message.substr(1)
+      adminNick = msg.nick
+      res.send ""
 
-    res.send ""
-    slack.postMessage slackMessage, process.env.SLACK_CHANNEL, "admin"
-    return
+      user.interpret tempMessage, adminNick
+      return
 
+  # Broadcast the message to all connected clients
   app.io.broadcast "chat:msg", msg
 
   # Also store the message in memory
@@ -74,7 +81,8 @@ app.io.route 'chat:msg', (req)->
   return if rate_limit(req.socket.id)
   return if typeof req.data.message != "string"
   req.data.timestamp = (new Date).getTime()
-  req.data.status = user.verify req.data.nick, req.cookies['connect.sid']
+  # If RESERVED_NICKS_URL doesn't exist => user = ""
+  req.data.status = if !!typeof(user) then user.verify req.data.nick, req.cookies['connect.sid'] else {"nick": true, "session": true}
 
   slackChannel = process.env.SLACK_CHANNEL
 

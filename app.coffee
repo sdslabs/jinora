@@ -28,24 +28,6 @@ app.use express.static __dirname + '/public'
 
 app.io.set 'transports', ['xhr-polling']
 
-makeSlackMessage = (status, banStatus, type, userNick, adminNick) ->
-  if status == "ban"
-    slackMessage = "#{adminNick} just #{type}-banned #{userNick}"
-  else if status == "unban"
-    slackMessage = "#{adminNick} just removed #{type}-ban from #{userNick}"
-  else if status == "error"
-    slackMessage = "Error while #{type}-banning #{userNick}"
-  else if status == "invalid"
-    if banStatus.length == 1
-      slackMessage = "Invalid command for #{banStatus}ning.\n"
-    else
-      slackMessage = "Invalid command."
-    slackMessage += "Sample commands:\n"
-    for ban in banStatus
-      slackMessage += "`!#{ban} nick cat` for #{ban}ning nick `cat`\n`!#{ban} user cat` for shadow-#{ban}ning user `cat`\n"
-  return slackMessage
-
-
 # Slack outgoing webhook is caught here
 app.post "/webhook", (req, res) ->
   throw "Invalid Token" unless req.body.token == process.env.OUTGOING_TOKEN
@@ -68,42 +50,11 @@ app.post "/webhook", (req, res) ->
     avatar: avatar
 
   privateMsg = if message[0] == "!" then true else false
-
   if privateMsg
-    tempMessage = msg.message.toLowerCase()
+    tempMessage = msg.message.substr(1)
     adminNick = msg.nick
+    slackMessage = user.interpret(tempMessage, adminNick)
 
-    if tempMessage[1..4] == "ban "
-      banStatus = ["ban"]
-      if tempMessage[5..9] == "nick "
-        type = "nick"
-        userNick = msg.message[10..]
-        if user.banNick userNick then status = "ban" else status = "error"
-      else if tempMessage[5..9] == "user "
-        type = "shadow"
-        userNick = msg.message[10..]
-        if user.banSession userNick then status = "ban" else status = "error"
-      else
-        status = "invalid"
-
-    else if tempMessage[1..6] == "unban "
-      banStatus = ["unban"]
-      if tempMessage[7..11] == "nick "
-        type = "nick"
-        userNick = msg.message[12..]
-        if user.unbanNick userNick then status = "unban" else status = "error"
-      else if tempMessage[7..11] == "user "
-        type = "shadow"
-        userNick = msg.message[12..]
-        if user.unbanSession userNick then status = "unban" else status = "error"
-      else
-        status = "invalid"
-
-    else
-      status = "invalid"
-      banStatus = ["ban", "unban"]
-      
-    slackMessage = makeSlackMessage(status, banStatus, type, userNick, adminNick)
     res.send ""
     slack.postMessage slackMessage, process.env.SLACK_CHANNEL, "admin"
     return

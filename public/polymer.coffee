@@ -66,8 +66,7 @@ socket.on 'chat:msg', (msg)->
   defaultName = defaultNames[(Math.random() * defaultNames.length) >>> 0]
   if msg.status and msg.status['nick'] == false
     setTimeout () ->
-      userPrompt = prompt 'Sorry! You can\'t have this username.\nPlease enter another username', defaultName
-      msg.nick = template.userName = if !userPrompt then defaultName else userPrompt
+      msg.nick = template.userName = prompt('Sorry! You can\'t have this username.\nPlease enter another username', defaultName)|| defaultName
       sendMessage msg.message
     , 1000
   else

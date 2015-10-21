@@ -18,7 +18,7 @@ lastUpdateStatus = true
 getJsonBlob = () ->
   options = {
     method: "GET"
-    url: process.env.BLOB_URL,
+    url: process.env.RESERVED_NICK_URL,
     headers: HEADERS
   }
   callback = (error, response, body) ->
@@ -32,7 +32,7 @@ updateJsonBlob = () ->
   lastUpdateStatus = false
   options = {
     method: "PUT"
-    url: process.env.BLOB_URL,
+    url: process.env.RESERVED_NICK_URL,
     headers: HEADERS
     body: JSON.stringify {"nicks": reservedNicks}
   }

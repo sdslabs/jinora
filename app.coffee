@@ -10,7 +10,7 @@ CBuffer = require('CBuffer');
 slack = require('slack-utils/api')(process.env.API_TOKEN, process.env.INCOMING_HOOK_URL)
 presence = require('./presence.coffee')
 rate_limit = require('./rate_limit.coffee')
-user = require('./user.coffee')
+user = require('./user.coffee')(slack)
 app = express().http().io()
 
 # This is a circular buffer of messages, which are stored in memory
@@ -53,10 +53,9 @@ app.post "/webhook", (req, res) ->
   if privateMsg
     tempMessage = msg.message.substr(1)
     adminNick = msg.nick
-    slackMessage = user.interpret(tempMessage, adminNick)
-
     res.send ""
-    slack.postMessage slackMessage, process.env.SLACK_CHANNEL, "admin"
+
+    user.interpret tempMessage, adminNick
     return
 
   app.io.broadcast "chat:msg", msg

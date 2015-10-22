@@ -14,7 +14,6 @@ app = express().http().io()
 if !process.env.RESERVED_NICKS_URL
   user = require('./user.coffee')(slack, process.env.RESERVED_NICKS_URL)
 else
-  user = undefined
   console.error "ERROR: banning won't work as RESERVED_NICKS_URL is not provided"
 
 # This is a circular buffer of messages, which are stored in memory
@@ -54,8 +53,9 @@ app.post "/webhook", (req, res) ->
     avatar: avatar
 
   # If RESERVED_NICKS_URL doesn't exist => user = ""
-  if !user
+  if !typeof(user)
     privateMsg = if message[0] == "!" then true else false
+    # If the message is not meant to be sent to jinora users, but to be interpreted by jinora
     if privateMsg
       tempMessage = msg.message.substr(1)
       adminNick = msg.nick
@@ -64,6 +64,7 @@ app.post "/webhook", (req, res) ->
       user.interpret tempMessage, adminNick
       return
 
+  # Broadcast the message to all connected clients
   app.io.broadcast "chat:msg", msg
 
   # Also store the message in memory
@@ -80,7 +81,7 @@ app.io.route 'chat:msg', (req)->
   return if typeof req.data.message != "string"
   req.data.timestamp = (new Date).getTime()
   # If RESERVED_NICKS_URL doesn't exist => user = ""
-  req.data.status = if !user then user.verify req.data.nick, req.cookies['connect.sid'] else {"nick": true, "session": true}
+  req.data.status = if !typeof(user) then user.verify req.data.nick, req.cookies['connect.sid'] else {"nick": true, "session": true}
 
   slackChannel = process.env.SLACK_CHANNEL
 

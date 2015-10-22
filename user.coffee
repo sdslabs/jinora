@@ -11,6 +11,7 @@ HEADERS = {
 reservedNicks = []
 reservedNicksURL = ""
 
+# Get json object from RESERVED_NICKS_URL and set the value of reservedNicks
 getJsonBlob = () ->
   options = {
     method: "GET"
@@ -42,7 +43,7 @@ updateJsonBlob = () ->
 
   return request options, callback
 
-
+# Form custom message to be sent to slack
 makeSlackMessage = () ->
   if msg.cmdStatus == true
     if msg.banStatus[0] == "ban"
@@ -125,7 +126,6 @@ banFunction = {
   }
 
 }
-
 
 module.exports = (slackObject, url) ->
 

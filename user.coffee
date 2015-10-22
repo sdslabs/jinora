@@ -1,7 +1,3 @@
-if process.env.NODE_ENV != 'production'
-  dotenv = require 'dotenv'
-  dotenv.load()
-
 request = require('request')
 
 slack = 
@@ -13,12 +9,12 @@ HEADERS = {
   "Accept": "application/json"
 }
 reservedNicks = []
-lastUpdateStatus = true
+reservedNicksURL = ""
 
 getJsonBlob = () ->
   options = {
     method: "GET"
-    url: process.env.RESERVED_NICK_URL,
+    url: reservedNicksUrl,
     headers: HEADERS
   }
   callback = (error, response, body) ->
@@ -29,15 +25,13 @@ getJsonBlob = () ->
   return request options, callback
 
 updateJsonBlob = () ->
-  lastUpdateStatus = false
   options = {
     method: "PUT"
-    url: process.env.RESERVED_NICK_URL,
+    url: reservedNicksUrl,
     headers: HEADERS
     body: JSON.stringify {"nicks": reservedNicks}
   }
   callback = (error, response, body) ->
-    lastUpdateStatus = true
     if !error and response.statusCode == 200
       msg.cmdStatus = true
     else
@@ -133,9 +127,10 @@ banFunction = {
 }
 
 
-module.exports = (slackObject) ->
+module.exports = (slackObject, url) ->
 
   slack = slackObject
+  reservedNicksUrl = url
 
   return {
     # Verify and return the auth status

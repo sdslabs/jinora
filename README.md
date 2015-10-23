@@ -30,7 +30,7 @@ Configuration Options:
 - **BUFFER_SIZE** Number of messages to keep in memory. This is automatically rotated and lost on reboots. Recommended value is 500-1000
 - **SLACK_CHANNEL** Name of slack channel to send messages to. Default is "public".
 - **BANNED_CHANNEL** Name of slack channel to send messages from banned users. Default is "public-hell".
-- **BLOB_URL** Link to your jsonblob url `/api/jsonblob/<blobid>`
+- **RESERVED_NICKS_URL** Link to your jsonblob url `/api/jsonblob/<blobid>`
 
 These configuration options can either be provided via a `.env` file in development, or via Heroku config variables, if you are deploying to Heroku. A sample env file is provided in `.env.sample`.
 

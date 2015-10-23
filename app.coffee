@@ -11,8 +11,9 @@ slack = require('slack-utils/api')(process.env.API_TOKEN, process.env.INCOMING_H
 presence = require('./presence.coffee')
 rate_limit = require('./rate_limit.coffee')
 app = express().http().io()
-if !process.env.RESERVED_NICKS_URL
-  user = require('./user.coffee')(slack, process.env.RESERVED_NICKS_URL)
+if !!process.env.RESERVED_NICKS_URL
+  console.log "wtf"
+  user = require('./user.coffee')(slack)
 else
   console.error "ERROR: banning won't work as RESERVED_NICKS_URL is not provided"
 
@@ -53,7 +54,7 @@ app.post "/webhook", (req, res) ->
     avatar: avatar
 
   # If RESERVED_NICKS_URL doesn't exist => user = ""
-  if !typeof(user)
+  if !!typeof(user)
     privateMsg = if message[0] == "!" then true else false
     # If the message is not meant to be sent to jinora users, but to be interpreted by jinora
     if privateMsg
@@ -81,7 +82,7 @@ app.io.route 'chat:msg', (req)->
   return if typeof req.data.message != "string"
   req.data.timestamp = (new Date).getTime()
   # If RESERVED_NICKS_URL doesn't exist => user = ""
-  req.data.status = if !typeof(user) then user.verify req.data.nick, req.cookies['connect.sid'] else {"nick": true, "session": true}
+  req.data.status = if !!typeof(user) then user.verify req.data.nick, req.cookies['connect.sid'] else {"nick": true, "session": true}
 
   slackChannel = process.env.SLACK_CHANNEL
 

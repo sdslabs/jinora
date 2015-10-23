@@ -12,7 +12,6 @@ presence = require('./presence.coffee')
 rate_limit = require('./rate_limit.coffee')
 app = express().http().io()
 if !!process.env.RESERVED_NICKS_URL
-  console.log "wtf"
   user = require('./user.coffee')(slack)
 else
   console.error "ERROR: banning won't work as RESERVED_NICKS_URL is not provided"

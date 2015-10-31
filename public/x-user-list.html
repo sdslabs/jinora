@@ -7,13 +7,45 @@ A single user list with a username, avatar, and desc.
   <template>
     <style type="text/css">
       #onlineList {
-        margin: 16px 0 0 20px;
+           padding-right: 20px;
+      }
+      .member-avatar{
+        border-radius: 50%;
+        display: inline-block;
+        float: right;
+        height: 30px;
+        width: 30px;
+        background: #fff url(images/default_admin.png) center center no-repeat;
+        border: solid 1px #ddd;
+        background-size: contain;
+      }
+      #head-label{
+         
+         color: #66696B;
+         margin: 7px 0 20px 0;
+         font-weight: 400;
+         font-size: 14px;
+      }
+      .username{
+        display: inline-block;
+        margin-top: 8px;
+        font-size: 13px;
+        font-weight: 400;
+      }
+      .list-item{
+        min-height: 40px;
+        display:block;
+        white-space: nowrap;
+        
       }
     </style>
     <section layout vertical id="onlineList">
-      <core-item label="Online"></core-item>
+      <div id="head-label">MEMBERS ONLINE</div>
       <template repeat="{{user in users}}">
-        <core-item icon="social:person" label="{{user}}"></core-item>
+        <div class="list-item">
+          <div class="username">{{user.name}}</div>
+          <div class="member-avatar" style="background-image: url({{user.avatar}});"></div>
+        </div>
       </template>
     </section>
 </template>

@@ -154,8 +154,11 @@ app.io.route 'presence:demand', (req)->
 presence.on 'change', ()->
   onlineMemberList = []
   for username in presence.online()
-    if slack.userInfoByName(username)
-      avatar = slack.userInfoByName(username)['profile']['image_72']
+    userInfo = slack.userInfoByName(username)
+    if userInfo
+      if !!userInfo.is_bot    # Continue for loop in case is_bot is true. '!!'' take care of case when is_bot is undefined
+        continue
+      avatar = userInfo['profile']['image_72']
     else
       avatar = "images/default_admin.png"
 

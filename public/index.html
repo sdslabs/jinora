@@ -4,13 +4,13 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="description" content="Jinora Public chat for SDSLabs">
+    <meta name="description" content="Jinora Public chat">
     <meta name="author" content="SDSLabs">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
 
-    <title>Chat with SDSLabs</title>
+    <title>#chat</title>
     <link rel="icon" sizes="302x302" href="images/jinora.png">
     <link href='https://fonts.googleapis.com/css?family=Roboto:400,300' rel='stylesheet' type='text/css'>
     <!-- For all styles: <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,900italic,900,700italic,700,500italic,300italic,400italic,300,100italic,100' rel='stylesheet' type='text/css'>-->
@@ -34,38 +34,26 @@
 
     <template id="template" is="auto-binding">
 
-      <core-header-panel flex id="top-header-panel" mode="seamed">
+      <core-header-panel flex class="top-header-panel" mode="seamed">
 
-        <div class="core-header"  id="top-toolbar">
-          <div id="chat-name" >#chat</div>
+        <div class="core-header top-toolbar">
+          <div id="chat-heading" >#chat</div>
           <div  style="background-image: url({{avatar}})" class="myavatar {{status}}"></div>
         </div>
 
 
-        <core-drawer-panel id="drawer-panel" drawerwidth="280px" rightdrawer responsivewidth="600px" disableswipe="false"  touch-action="">
+        <core-drawer-panel class="drawer-panel" drawerwidth="280px" rightdrawer responsivewidth="600px" disableswipe="false"  touch-action="">
 
-          <div id="right-panel" drawer >
-            <div class="core-header"  id="announcement-area" style="display: {{announcement.length>1?'block':'none'}};" >
-                <div id="announcement-title">ANNOUNCEMENT</div>
-                <!-- Defined a polymer element to insert unescaped HTML. See http://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript for refernece-->
-                <polymer-element name="html-echo" attributes="html">
-                  <script>
-                    Polymer('html-echo', {
-                      htmlChanged: function() {
-                        // WARNING: potential XSS vulnerability if `html` comes from an untrusted source
-                        this.innerHTML = this.html;
-                        this.innerHTML = $("#announcement-text").text();
-                      }
-                    });
-                  </script>
-                </polymer-element>
-                <p id="announcement-text"><html-echo  html="{{announcement}}"></html-echo></p>
+          <div class="right-panel" drawer >
+            <div class="core-header" id="announcement-area" style="display: none" >
+                <div class="announcement-title">ANNOUNCEMENT</div>
+                <p id="announcement-text"></p>
             </div>
             <x-user-list users="{{users}}"></x-user-list>
           </div>
 
-          <div id="header-panel" main="" mode="seamed">
-            <section layout vertical fit id="chat">
+          <div class="header-panel" main="" mode="seamed">
+            <section layout vertical fit class="chat-area">
               <div flex class="chat-list">
                 <template repeat="{{message in messages}}">
                   <x-chat-list color="{{message.color}}" avatar="{{message.avatar}}" nick="{{message.nick}}" message="{{message.message}}"  status="{{message.status}}" timestamp="{{message.timestamp}}"></x-chat-list>

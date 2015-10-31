@@ -65,7 +65,7 @@ app.post "/webhook", (req, res) ->
   if slack.userInfoById(req.body.user_id)
     avatar = slack.userInfoById(req.body.user_id)['profile']['image_72']
   else
-    avatar = "images/default_admin.png"
+    avatar = process.env.BASE_URL + "/images/default_admin.png"
 
   message = slack.parseMessage(req.body.text)
 
@@ -102,7 +102,7 @@ app.io.route 'chat:msg', (req)->
   req.data.online = 0   # Online status of end user is not tracked, always set to 0
   req.data.timestamp = (new Date).getTime()   # Current Time
   if !req.data.avatar
-    req.data.avatar = "https://chat.sdslabs.co/images/default_user.png"
+    req.data.avatar = "images/default_user.png"
   # If RESERVED_NICKS_URL doesn't exist => userVerifier = ""
   status = if !!(userVerifier) then userVerifier.verify req.data.nick, req.cookies['connect.sid'] else {"nick": true, "session": true}
   storeMsg = true

@@ -67,7 +67,13 @@ socket.on 'chat:msg', (msg)->
     showMessage msg
 
 socket.on 'announcement:data', (data)->
-  template.announcement = data['text']
+  if data['text'].length > 2
+    $("#announcement-text")[0].innerHTML = data['text']
+    $("#announcement-area")[0].style.display = "block"
+  else
+    $("#announcement-area")[0].style.display = "none"
+  $("#chat-heading")[0].innerHTML = data['heading']
+  document.title = data['pageTitle']
 
 socket.on 'chat:log', (log)->
   log.map showMessage

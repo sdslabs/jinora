@@ -42,7 +42,7 @@ updateJsonBlob = () ->
       msg.cmdStatus = "error"
 
     msg.message = makeSlackMessage()
-    slack.postMessage msg.message, process.env.SLACK_CHANNEL, "admin"
+    slack.postMessage msg.message, process.env.SLACK_CHANNEL, "Jinora"
 
   return request options, callback
 
@@ -110,7 +110,7 @@ banFunction = {
           bannedSessions.push nickSessionMap[nick] if nickSessionMap[nick] not in bannedSessions
           msg.cmdStatus = true
           msg.message = makeSlackMessage()
-          slack.postMessage msg.message, process.env.SLACK_CHANNEL, "admin"
+          slack.postMessage msg.message, process.env.SLACK_CHANNEL, "Jinora"
           return true
 
       return !!nick and banned()
@@ -122,7 +122,7 @@ banFunction = {
           bannedSessions.pop nickSessionMap[nick] if nickSessionMap[nick] in bannedSessions
           msg.cmdStatus = true
           msg.message = makeSlackMessage()
-          slack.postMessage msg.message, process.env.SLACK_CHANNEL, "admin"
+          slack.postMessage msg.message, process.env.SLACK_CHANNEL, "Jinora"
           return true
 
       return !!nick and unbanned()
@@ -152,19 +152,19 @@ module.exports = (slackObject) ->
       msg.type = ""
       msg.cmdStatus = "invalid"
       words = msg.message.split(' ')
-      types = {"nick": "nick", "user": "shadow"}
+      types = ["nick", "user"]
       bans = ["ban", "unban"]
       msg.banStatus = bans
       if words[0] in bans
         msg.banStatus = [words[0]]
         msg.userNick = words[2..].join(" ") or ""
-        if types.hasOwnProperty(words[1])
+        if words[1] in types
           msg.type = words[1]
           msg.cmdStatus = eval("banFunction.#{msg.type}.#{words[0]}")(msg.userNick) || "error"
 
       if msg.cmdStatus != true
         msg.message = makeSlackMessage()
-        slack.postMessage msg.message, process.env.SLACK_CHANNEL, "admin"
+        slack.postMessage msg.message, process.env.SLACK_CHANNEL, "Jinora"
 
   }
 

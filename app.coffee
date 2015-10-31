@@ -11,17 +11,15 @@ slack = require('slack-utils/api')(process.env.API_TOKEN, process.env.INCOMING_H
 presence = require('./presence.coffee')
 rate_limit = require('./rate_limit.coffee')
 app = express().http().io()
+announcementHandler = require('./announcements.coffee')(app.io, slack)
 if !!process.env.RESERVED_NICKS_URL
-  user = require('./user.coffee')(slack)
+  userVerifier = require('./user.coffee')(slack)
 else
   console.error "ERROR: banning won't work as RESERVED_NICKS_URL is not provided"
 
 # This is a circular buffer of messages, which are stored in memory
 messages = new CBuffer(parseInt(process.env.BUFFER_SIZE))
-
-# Note that this is a sorted list
-avatars = fs.readdirSync('./public/images/avatars').map (filename)->
-  path.basename(filename, '.jpg')
+onlineMemberList = []
 
 # Setup your sessions, just like normal.
 app.use express.cookieParser()
@@ -31,6 +29,22 @@ app.use express.static __dirname + '/public'
 
 app.io.set 'transports', ['xhr-polling']
 
+# This function is for interpreting the commands sent to jinora from slack by appending ! to the message
+interpretCommand = (commandText, adminNick) ->
+  userVerifierCommands = ["ban", "unban"]
+  announcementCommands = ["announce", "announcement"]
+  firstWord = commandText.split(' ')[0]
+  if (firstWord in userVerifierCommands)
+    if(userVerifier)
+      userVerifier.interpret commandText, adminNick
+    else
+      errorText = "Banning feature is not configured. Add RESERVED_NICKS_URL to .env file."
+      slack.postMessage errorText, process.env.SLACK_CHANNEL, "Jinora"  
+  else if (firstWord in announcementCommands)
+    announcementHandler.interpret commandText, adminNick
+  else
+    announcementHandler.showHelp()
+
 # Slack outgoing webhook is caught here
 app.post "/webhook", (req, res) ->
   throw "Invalid Token" unless req.body.token == process.env.OUTGOING_TOKEN
@@ -39,8 +53,19 @@ app.post "/webhook", (req, res) ->
   # Prevents us from falling into a loop
   return res.json {} if req.body.user_id == 'USLACKBOT'
 
+  # If the message is not meant to be sent to jinora users, but it is a command meant to be interpreted by jinora
+  isCommand = (req.body.text[0] == "!")
+  if isCommand
+    commandText = req.body.text.substr(1)
+    adminNick = req.body.user_name
+    interpretCommand(commandText,adminNick)
+    res.send ""
+    return
+
   if slack.userInfoById(req.body.user_id)
     avatar = slack.userInfoById(req.body.user_id)['profile']['image_72']
+  else
+    avatar = "images/default_admin.png"
 
   message = slack.parseMessage(req.body.text)
 
@@ -48,21 +73,10 @@ app.post "/webhook", (req, res) ->
   msg =
     message: message,
     nick: req.body.user_name,
-    classes: "admin",
-    timestamp: Math.floor(req.body.timestamp*1000)
+    admin: 1,
+    online: 1,
+    timestamp: (new Date).getTime()
     avatar: avatar
-
-  # If RESERVED_NICKS_URL doesn't exist => user = ""
-  if !!typeof(user)
-    privateMsg = if message[0] == "!" then true else false
-    # If the message is not meant to be sent to jinora users, but to be interpreted by jinora
-    if privateMsg
-      tempMessage = msg.message.substr(1)
-      adminNick = msg.nick
-      res.send ""
-
-      user.interpret tempMessage, adminNick
-      return
 
   # Broadcast the message to all connected clients
   app.io.broadcast "chat:msg", msg
@@ -73,64 +87,90 @@ app.post "/webhook", (req, res) ->
   # Send a blank response, so slack knows we got it.
   res.send ""
 
+
+
 # Broadcast the chat message to all connected clients,
 # including the one who made the request
 # also send it to slack
 app.io.route 'chat:msg', (req)->
-  return if rate_limit(req.socket.id)
+  return if rate_limit(req.socket.id) 
+  return if typeof req.data != "object"
   return if typeof req.data.message != "string"
-  req.data.timestamp = (new Date).getTime()
-  # If RESERVED_NICKS_URL doesn't exist => user = ""
-  req.data.status = if !!typeof(user) then user.verify req.data.nick, req.cookies['connect.sid'] else {"nick": true, "session": true}
+
+  delete req.data.invalidNick
+  req.data.admin = 0    # Indicates that the message is not sent by a team member
+  req.data.online = 0   # Online status of end user is not tracked, always set to 0
+  req.data.timestamp = (new Date).getTime()   # Current Time
+  if !req.data.avatar
+    req.data.avatar = "https://chat.sdslabs.co/images/default_user.png"
+  # If RESERVED_NICKS_URL doesn't exist => userVerifier = ""
+  status = if !!(userVerifier) then userVerifier.verify req.data.nick, req.cookies['connect.sid'] else {"nick": true, "session": true}
+  storeMsg = true
 
   slackChannel = process.env.SLACK_CHANNEL
-
+  
   # If the nick is reserved
-  if !req.data.status['nick']
+  if !status['nick']
+    req.data.invalidNick = true;
     req.io.emit 'chat:msg', req.data
     return
+
   # If the session is banned
-  else if !req.data.status['session']
+  else if !status['session']
     req.io.emit 'chat:msg', req.data
     slackChannel = process.env.BANNED_CHANNEL
+    storeMsg = false
+
   # If the message is private
   else if req.data.message[0] == '!'
-    req.data.private = true
     req.io.emit 'chat:msg', req.data
+    storeMsg = false
+
   else
     # Send the message to all jinora users
     app.io.broadcast 'chat:msg', req.data
 
   # Send message to slack
   # If we were given a valid avatar
-  if process.env.BASE_URL? and req.data.avatar and avatars[req.data.avatar]
-    icon = "#{process.env.BASE_URL}/images/avatars/#{avatars[req.data.avatar]}.jpg"
+  if req.data.avatar 
+    icon = req.data.avatar
     slack.postMessage req.data.message, slackChannel, req.data.nick, icon
   else
     slack.postMessage req.data.message, slackChannel, req.data.nick
+
   # Store message in memory
-  messages.push req.data
+  if storeMsg
+    messages.push req.data
 
 # Once a new chat client connects
 # Send them back the last 100 messages
 app.io.route 'chat:demand', (req)->
   logs = messages.toArray()
-  # We filter out non-private messages
-  logs = logs.filter (msg)->
-    msg.message[0] != '!'
   req.io.emit 'chat:log', logs
 
 app.io.route 'presence:demand', (req)->
-  req.io.emit 'presence:list', presence.online()
+  req.io.emit 'presence:list', onlineMemberList
 
 presence.on 'change', ()->
-  app.io.broadcast 'presence:list', presence.online()
+  onlineMemberList = []
+  for username in presence.online()
+    userInfo = slack.userInfoByName(username)
+    if userInfo
+      if !!userInfo.is_bot    # Continue for loop in case is_bot is true. '!!'' take care of case when is_bot is undefined
+        continue
+      avatar = userInfo['profile']['image_72']
+    else
+      avatar = "images/default_admin.png"
+
+    onlineMemberList.push({
+      name: username
+      avatar: avatar
+    })
+  
+  app.io.broadcast 'presence:list', onlineMemberList
 
 # Render the homepage
 app.get "/", (req, res) ->
   res.sendfile "public/index.html"
-
-app.get "/old", (req, res) ->
-  res.sendfile "index.html"
 
 app.listen process.env.PORT || 3000

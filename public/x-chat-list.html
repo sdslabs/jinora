@@ -4,29 +4,33 @@ A single user list with a username, avatar, and desc.
     <x-chat-list avatar="name" nick="name" message="hello" status="online" timestamp="1420145273945"></x-chat-list>
 -->
 <script src="bower_components/time-elements/time-elements.js"></script>
-<polymer-element name="x-chat-list" attributes="avatar color nick message status timestamp">
+<polymer-element name="x-chat-list" attributes="avatar admin nick message online timestamp">
   <template>
     <style>
     :host {
         display: block;
         position: relative;
         width: 100%;
-        border-bottom: 1px solid #e0e0e0;
-        font-size: 16px;
-        min-height: 72px;
+        font-weight: 400;
+        font-size: 13px;
+        min-height: 65px;
         z-index: 0;
     }
     .user-list {
-        padding: 16px;
+        padding: 13px;
+        padding-left: 46px;
+        padding-right: 50px;
+
     }
     .avatar {
         border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        margin: 0 16px 0 0;
-        background: #9e9e9e url(lion.png) center center no-repeat;
+        width: 36px;
+        height: 36px;
+        margin: 0 11px 0 0;
+        background: #fff url("images/default_user.png") center center no-repeat;
         background-size: contain;
         position: relative;
+        border: solid 1px #eee;
     }
     .status {
         position: absolute;
@@ -38,61 +42,32 @@ A single user list with a username, avatar, and desc.
         background-color: #7EDF25;
         display: none;
     }
-    .status.online {
-        display: block;
-    }
+
     .username {
-        font-weight: 500;
-        color: #919191;
+        margin-bottom: 6px;
+        margin-top: 2px;
+        color: #474747;
         line-height: 1.3em;
         max-width: 90%;
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
+        
+    }
+    .text{
+        color: #7C7C7C;
     }
     .timestamp {
-        font-size: 0.75em;
-        color: #919191;
+        font-size: 9px;
+        font-weight: 400;
+        color: #999999;
     }
-    .avatar {
-        border: solid 3px silver;
-    }
-    .avatar.navy {
-        border-color: #393b79;
-    }
-    .avatar.slate {
-        border-color: #6b6ecf;
-    }
-    .avatar.olive {
-        border-color: #637939;
-    }
-    .avatar.moss {
-        border-color: #b5cf6b;
-    }
-    .avatar.chocolate {
-        border-color: #8c6d31;
-    }
-    .avatar.buttercup {
-        border-color: #e7ba52;
-    }
-    .avatar.maroon {
-        border-color: #843c39;
-    }
-    .avatar.cerise {
-        border-color: #d6616b;
-    }
-    .avatar.plum {
-        border-color: #7b4173;
-    }
-    .avatar.orchid {
-        border-color: #ce6dbd;
-    }
+
+    
     </style>
 
     <section class="user-list" layout horizontal>
-        <div class="avatar {{color}}" style="background-image: url({{avatar}})">
-            <div class="status {{status}}"></div>
-        </div>
+        <div class="avatar {{color}}" style="background-image: url({{avatar}})"></div>
         <div flex>
             <div class="username" data-nick="{{nick}}">{{nick}}</div>
             <div class="text" data-value="{{message}}">{{message}}</div>

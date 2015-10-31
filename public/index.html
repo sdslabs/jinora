@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -8,14 +9,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>Chat with SDSLabs</title>
 
-    <link rel="icon" sizes="302x302" href="https://i.imgur.com/WNRjxyN.jpg">
+    <title>Chat with SDSLabs</title>
+    <link rel="icon" sizes="302x302" href="images/jinora.png">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,300' rel='stylesheet' type='text/css'>
+    <!-- For all styles: <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,900italic,900,700italic,700,500italic,300italic,400italic,300,100italic,100' rel='stylesheet' type='text/css'>-->
 
     <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+
     <link rel="import" href="bower_components/core-scaffold/core-scaffold.html">
     <link rel="import" href="bower_components/core-item/core-item.html">
     <link rel="import" href="bower_components/core-icons/social-icons.html">
@@ -25,38 +29,59 @@
     <link rel="import" href="x-user-list.html">
     <link rel="stylesheet" href="style.css">
   </head>
-  <body>
+
+  <body layout vertical fullbleed>
+
     <template id="template" is="auto-binding">
-      <core-scaffold>
-        <core-header-panel navigation flex>
-          <core-toolbar id="navheader" class="tall">
-            <div class="middle avatar {{color}}" style="background-image: url({{avatar}})"></div>
-              <div class="bottom uuid">{{userName}}</div>
-          </core-toolbar>
-          <x-user-list users="{{users}}"></x-chat-list>
 
+      <core-header-panel flex id="top-header-panel" mode="seamed">
 
-        </core-header-panel>
-
-        <div tool layout horizontal flex>
-          <span flex>Chat with SDSLabs</span>
-          <core-icon icon="account-circle"></core-icon><span>{{status}}</span>
+        <div class="core-header"  id="top-toolbar">
+          <div id="chat-name" >#chat</div>
+          <div  style="background-image: url({{avatar}})" class="myavatar {{status}}"></div>
         </div>
 
-        <section layout vertical fit id="chat">
-        <div flex class="chat-list">
-          <template repeat="{{message in messages}}">
-            <x-chat-list color="{{message.color}}" avatar="{{message.avatar}}" nick="{{message.nick}}" message="{{message.message}}"  status="{{message.status}}" timestamp="{{message.timestamp}}"></x-chat-list>
-          </template>
-        </div>
-        <div class="shim"></div>
 
-        <div class="send-message" layout horizontal>
-            <paper-input flex label="Type message..." id="input" value="{{input}}" on-keyup="{{checkKey}}"></paper-input>
-            <paper-fab icon="send" id="sendButton" on-tap="{{sendMyMessage}}"></paper-fab>
+        <core-drawer-panel id="drawer-panel" drawerwidth="280px" rightdrawer responsivewidth="600px" disableswipe="false"  touch-action="">
+
+          <div id="right-panel" drawer >
+            <div class="core-header"  id="announcement-area" style="display: {{announcement.length>1?'block':'none'}};" >
+                <div id="announcement-title">ANNOUNCEMENT</div>
+                <!-- Defined a polymer element to insert unescaped HTML. See http://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript for refernece-->
+                <polymer-element name="html-echo" attributes="html">
+                  <script>
+                    Polymer('html-echo', {
+                      htmlChanged: function() {
+                        // WARNING: potential XSS vulnerability if `html` comes from an untrusted source
+                        this.innerHTML = this.html;
+                        this.innerHTML = $("#announcement-text").text();
+                      }
+                    });
+                  </script>
+                </polymer-element>
+                <p id="announcement-text"><html-echo  html="{{announcement}}"></html-echo></p>
+            </div>
+            <x-user-list users="{{users}}"></x-user-list>
           </div>
-        </section>
-      </core-scaffold>
+
+          <div id="header-panel" main="" mode="seamed">
+            <section layout vertical fit id="chat">
+              <div flex class="chat-list">
+                <template repeat="{{message in messages}}">
+                  <x-chat-list color="{{message.color}}" avatar="{{message.avatar}}" nick="{{message.nick}}" message="{{message.message}}"  status="{{message.status}}" timestamp="{{message.timestamp}}"></x-chat-list>
+                </template>
+              </div>
+              <div class="send-message" layout="" horizontal="">
+                <paper-input flex label="Message" id="input" value="{{input}}" on-keyup="{{checkKey}}"></paper-input>
+              </div>
+            </section>
+          </div>
+
+        </core-drawer-panel>   
+
+
+      </core-header-panel>
+      
     </template>
     <script src="polymer.js"></script>
   </body>

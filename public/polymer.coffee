@@ -80,3 +80,9 @@ socket.on 'chat:log', (log)->
 
 socket.on 'presence:list', (list)->
   template.users = list
+
+# Set focus on the input element. Doesn't seem to work without using setTimeout.
+setTimeout ->
+  $("#input").focus()
+,1
+

@@ -3,7 +3,9 @@
 module.exports = (ioObject, slackObject) ->
   io = ioObject
   slack = slackObject
-  announcement = 
+  announcement =
+    heading: if !!process.env.ORGANIZATION_NAME then ("#Chat with " + process.env.ORGANIZATION_NAME) else "#chat"
+    pageTitle: if !!process.env.ORGANIZATION_NAME then ("Chat with " + process.env.ORGANIZATION_NAME) else "#chat"
     text: ""
   
   helpText = "*Usage:*\n\t!" +
@@ -42,6 +44,3 @@ module.exports = (ioObject, slackObject) ->
         io.broadcast 'announcement:data',announcement
         text = "*#{adminNick}* changed announcement to:\n#{announcement.text}" 
         slack.postMessage text, process.env.SLACK_CHANNEL, "Jinora"
-
-
-  

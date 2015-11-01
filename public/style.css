@@ -26,13 +26,13 @@ a{
   text-decoration: none;
 }
 
-#top-toolbar{
+.top-toolbar{
   border-bottom: solid 1px #DADAE3;
   height: 30px;
   padding: 5px 45px 10px 39px;
 }
 
-#chat-name{
+#chat-heading{
   color: #56565B;
   display: inline-block;
   font-size: 19px;
@@ -51,12 +51,13 @@ a{
   background-size: contain;
 }
 
-#right-panel{
+.right-panel{
    padding: 20px 25px 20px 30px;
    overflow-y: scroll;
+   background-color: #f8f8fa
 }
 
-#announcement-title{
+.announcement-title{
   padding-top: 10px;
   font-size: 14px;
   font-weight: 400;
@@ -89,7 +90,7 @@ paper-input /deep/ .underline {
   display: none;
 }
 
-#chat {
+.chat-area {
   height: 100%;
 }
 
@@ -102,8 +103,4 @@ paper-input /deep/ .underline {
 .send-message {
   padding: 7px 16px 11px 46px;
   background-color: #ffffff;
-}
-
-#right-panel{
-  background-color: #f8f8fa
 }

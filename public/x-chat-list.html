@@ -6,66 +6,7 @@ A single user list with a username, avatar, and desc.
 <script src="bower_components/time-elements/time-elements.js"></script>
 <polymer-element name="x-chat-list" attributes="avatar admin nick message online timestamp">
   <template>
-    <style>
-    :host {
-        display: block;
-        position: relative;
-        width: 100%;
-        font-weight: 400;
-        font-size: 13px;
-        min-height: 65px;
-        z-index: 0;
-    }
-    .user-list {
-        padding: 13px;
-        padding-left: 46px;
-        padding-right: 50px;
-
-    }
-    .avatar {
-        border-radius: 50%;
-        width: 36px;
-        height: 36px;
-        margin: 0 11px 0 0;
-        background: #fff url("images/default_user.png") center center no-repeat;
-        background-size: contain;
-        position: relative;
-        border: solid 1px #eee;
-    }
-    .status {
-        position: absolute;
-        bottom: -3px;
-        right: -3px;
-        border-radius: 50%;
-        width: 14px;
-        height: 14px;
-        background-color: #7EDF25;
-        display: none;
-    }
-
-    .username {
-        margin-bottom: 6px;
-        margin-top: 2px;
-        color: #474747;
-        line-height: 1.3em;
-        max-width: 90%;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-        
-    }
-    .text{
-        color: #7C7C7C;
-    }
-    .timestamp {
-        font-size: 9px;
-        font-weight: 400;
-        color: #999999;
-    }
-
-    
-    </style>
-
+    <link rel="stylesheet" href="x-chat-list.css">
     <section class="user-list" layout horizontal>
         <div class="avatar {{color}}" style="background-image: url({{avatar}})"></div>
         <div flex>

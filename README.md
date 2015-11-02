@@ -18,6 +18,7 @@ No more need to having your team monitor IRC or Olark, it can all be done in Sla
 4. Messages sent from Slack are highlighted as official
 5. Circular buffer that stores messages in memory (configurable limit)
 6. Supports shadow-banning of users. Also nicks can be reserved by adding them to your [jsonblob](https://jsonblob.com).
+7. Announcements can be made by team members which are visible to all clients.
 
 ##Setup Instructions
 
@@ -31,6 +32,7 @@ Configuration Options:
 - **SLACK_CHANNEL** Name of slack channel to send messages to. Default is "public".
 - **BANNED_CHANNEL** Name of slack channel to send messages from banned users. Default is "public-hell".
 - **RESERVED_NICKS_URL** Link to your jsonblob url `/api/jsonblob/<blobid>`
+- **ORGANIZATION_NAME** Name of your organization. The title and heading of the page will be "Chat with <ORGANIZTION_NAME>"
 
 These configuration options can either be provided via a `.env` file in development, or via Heroku config variables, if you are deploying to Heroku. A sample env file is provided in `.env.sample`.
 
@@ -83,6 +85,12 @@ Jinora communicates with slack by means of two webhooks, one incoming and one ou
 ### How to ban?
 > Read this [wiki](https://github.com/sdslabs/jinora/wiki/Banning-nicks-and-sessions)
 
+### How to make announcements?
+
+Announcements can be made by typing `!announce some_announcement` in your public channel where some_announcement is to be replaced by some text. Anouncements are sent in real time to all clients and dispayed in an announcement area at the top right. You can remove announcement by typing `!announce -`.
+
+Remember that messages prefixed with `!` are commands interpreted by jinora, and these messages are not sent to clients. You can see a list of all jinora commands by entering `!help` in the public channel.
+
 #Upgrading
 
 Make sure you upgrade to 2.0.1 atleast. To upgrade from 1.x to 2.x, follow these steps:
@@ -103,17 +111,5 @@ Jinora is licenced under the [MIT Licence](http://nemo.mit-license.org/).
 
 ##Credits
 Artwork by [peachei.deviantart.com](http://peachei.deviantart.com/art/Older-Jinora-317463839)
-
-List of cat avatars used:
-
-- Bengal: Tyler T CC BY-SA 3.0
-- Siamese: Karin Langner-Bahmann CC BY-SA 3.0
-- Sphinx: Christopher Voelker CC-BY-3.0
-- Ragdoll: Simone Johnsson CC BY-SA 2.0
-- Persian: UnionMaminia CC BY-SA 3.0
-- Korat: Heikkisiltala CC BY-SA 3.0
-- Japanese Bobtail: ようてい CC BY-SA 3.0
-- Abyssinian: Karin Langner-Bahmann CC BY-SA 3.0
-- Scottish Fold: Vladimir Chubarov CC BY-SA 3.0
 
 The polymer source is based on [paper-chat](https://github.com/pubnub/paper-chat) by pubnub.

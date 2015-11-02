@@ -53,10 +53,12 @@ app.post "/webhook", (req, res) ->
   # Prevents us from falling into a loop
   return res.json {} if req.body.user_id == 'USLACKBOT'
 
+  message = slack.parseMessage(req.body.text)
+
   # If the message is not meant to be sent to jinora users, but it is a command meant to be interpreted by jinora
   isCommand = (req.body.text[0] == "!")
   if isCommand
-    commandText = req.body.text.substr(1)
+    commandText = message.substr(1)
     adminNick = req.body.user_name
     interpretCommand(commandText,adminNick)
     res.send ""
@@ -65,9 +67,7 @@ app.post "/webhook", (req, res) ->
   if slack.userInfoById(req.body.user_id)
     avatar = slack.userInfoById(req.body.user_id)['profile']['image_72']
   else
-    avatar = process.env.BASE_URL + "/images/default_admin.png"
-
-  message = slack.parseMessage(req.body.text)
+    avatar = "images/default_admin.png"
 
   # Broadcast the message to all clients
   msg =
@@ -102,7 +102,7 @@ app.io.route 'chat:msg', (req)->
   req.data.online = 0   # Online status of end user is not tracked, always set to 0
   req.data.timestamp = (new Date).getTime()   # Current Time
   if !req.data.avatar
-    req.data.avatar = "images/default_user.png"
+    req.data.avatar = process.env.BASE_URL + "/images/default_user.png"
   # If RESERVED_NICKS_URL doesn't exist => userVerifier = ""
   status = if !!(userVerifier) then userVerifier.verify req.data.nick, req.cookies['connect.sid'] else {"nick": true, "session": true}
   storeMsg = true

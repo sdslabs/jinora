@@ -1,4 +1,4 @@
-rtm = require('slack-utils/rtm')(process.env.API_TOKEN)
+rtm = require('slack-utils-2/rtm')(process.env.API_TOKEN)
 EventEmitter = require('events').EventEmitter
 presence = new EventEmitter
 online = []

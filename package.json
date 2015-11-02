@@ -32,7 +32,7 @@
     "dotenv": "^0.4.0",
     "express.io": "^1.1.13",
     "request": "^2.65.0",
-    "slack-utils": "^0.2.0"
+    "slack-utils-2": "^0.2.3"
   },
   "engines": {
     "node": "0.10.x"

@@ -2303,9 +2303,9 @@
       }
     },
     "slack-utils": {
-      "version": "0.2.2",
-      "from": "slack-utils@>=0.2.2 <0.3.0",
-      "resolved": "https://registry.npmjs.org/slack-utils/-/slack-utils-0.2.2.tgz",
+      "version": "0.3.0",
+      "from": "slack-utils@>=0.3.0 <0.4.0",
+      "resolved": "https://registry.npmjs.org/slack-utils/-/slack-utils-0.3.0.tgz",
       "dependencies": {
         "ws": {
           "version": "0.7.2",

@@ -7,14 +7,15 @@ module.exports = (ioObject, slackObject) ->
     heading: if !!process.env.ORGANIZATION_NAME then ("#Chat with " + process.env.ORGANIZATION_NAME) else "#chat"
     pageTitle: if !!process.env.ORGANIZATION_NAME then ("Chat with " + process.env.ORGANIZATION_NAME) else "#chat"
     text: ""
-  
+
   helpText = "*Usage:*\n\t!" +
   "ban nick <nick> _to ban a nick._\n\t" +
-  "!ban user <nick> _to ban the user session corresponding to given nick._\n\t" + 
+  "!ban user <nick> _to ban the user session corresponding to given nick._\n\t" +
   "!unban nick <nick>\n\t!unban user <nick>\n\t" +
-  "!announcement _to see the current announcement._\n\t" + 
-  "!announce <announcement> _to change announcement._\n\t" + 
+  "!announcement _to see the current announcement._\n\t" +
+  "!announce <announcement> _to change announcement._\n\t" +
   "!announce - _to remove announcement._\n\t" +
+  "!clear To remove all the latest messages from the public view._\n\t" +
   "!help _to show this message._"
 
   io.route 'announcement:demand', (req)->
@@ -42,5 +43,5 @@ module.exports = (ioObject, slackObject) ->
           return
         announcement['text'] = content
         io.broadcast 'announcement:data',announcement
-        text = "*#{adminNick}* changed announcement to:\n#{announcement.text}" 
+        text = "*#{adminNick}* changed announcement to:\n#{announcement.text}"
         slack.postMessage text, process.env.SLACK_CHANNEL, "Jinora"

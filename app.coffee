@@ -33,15 +33,18 @@ app.io.set 'transports', ['xhr-polling']
 interpretCommand = (commandText, adminNick) ->
   userVerifierCommands = ["ban", "unban"]
   announcementCommands = ["announce", "announcement"]
+  clearCommands = ["clean", "clear"]
   firstWord = commandText.split(' ')[0]
   if (firstWord in userVerifierCommands)
     if(userVerifier)
       userVerifier.interpret commandText, adminNick
     else
       errorText = "Banning feature is not configured. Add RESERVED_NICKS_URL to .env file."
-      slack.postMessage errorText, process.env.SLACK_CHANNEL, "Jinora"  
+      slack.postMessage errorText, process.env.SLACK_CHANNEL, "Jinora"
   else if (firstWord in announcementCommands)
     announcementHandler.interpret commandText, adminNick
+  else if (firstWord in clearCommands)
+    messages = new CBuffer(parseInt(process.env.BUFFER_SIZE))
   else
     announcementHandler.showHelp()
 
@@ -93,7 +96,7 @@ app.post "/webhook", (req, res) ->
 # including the one who made the request
 # also send it to slack
 app.io.route 'chat:msg', (req)->
-  return if rate_limit(req.socket.id) 
+  return if rate_limit(req.socket.id)
   return if typeof req.data != "object"
   return if typeof req.data.message != "string"
 
@@ -108,7 +111,7 @@ app.io.route 'chat:msg', (req)->
   storeMsg = true
 
   slackChannel = process.env.SLACK_CHANNEL
-  
+
   # If the nick is reserved
   if !status['nick']
     req.data.invalidNick = true;
@@ -132,7 +135,7 @@ app.io.route 'chat:msg', (req)->
 
   # Send message to slack
   # If we were given a valid avatar
-  if req.data.avatar 
+  if req.data.avatar
     icon = req.data.avatar
     slack.postMessage req.data.message, slackChannel, req.data.nick, icon
   else
@@ -166,7 +169,7 @@ presence.on 'change', ()->
       name: username
       avatar: avatar
     })
-  
+
   app.io.broadcast 'presence:list', onlineMemberList
 
 # Render the homepage

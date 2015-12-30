@@ -2,6 +2,7 @@ template = document.querySelector('#template')
 socket = io.connect document.location.origin,
   reconnectionDelay: 200
   reconnectionDelayMax: 1000
+  'sync disconnect on unload': true
 
 template.announcement = ""
 
@@ -46,12 +47,18 @@ template.checkKey = (e) ->
 
 socket.on 'disconnect', ->
   template.status = 'disconnected'
+  socket.emit 'member:disconnect',
+    nick: template.userName
 
 socket.on 'reconnect', ->
   template.status = 'connected'
+  socket.emit 'member:connect',
+    nick: template.userName
 
 socket.on 'connect', ->
   template.status = 'connected'
+  socket.emit 'member:connect',
+    nick: template.userName
   socket.emit 'chat:demand'
   socket.emit 'announcement:demand'
   socket.emit 'presence:demand'

@@ -50,7 +50,11 @@
       "value": "https://jinora.herokuapp.com"
     },
     "ADMIN_NICK": {
-      "description": "How to display the name of an admin. full for the full name, nick for the nickname (default)"
+      "description": "How to display the name of an admin. full for the full name, nick for the nickname (default)",
+      "required": false
+    },
+    "MEMBER_JOIN_NOTIFY": {
+      "description": "Whether or not to notify admins of members joining. Values can be on and off (default)",
       "required": false
     }
   }

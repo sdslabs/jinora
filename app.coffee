@@ -152,6 +152,7 @@ app.io.route 'chat:msg', (req)->
 app.io.route 'chat:demand', (req)->
   logs = messages.toArray()
   req.io.emit 'chat:log', logs
+  slack.postMessage req.data.nick + " entered channel", process.env.SLACK_CHANNEL, "Jinora"
 
 app.io.route 'presence:demand', (req)->
   req.io.emit 'presence:list', onlineMemberList

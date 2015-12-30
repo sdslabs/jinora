@@ -52,7 +52,8 @@ socket.on 'reconnect', ->
 
 socket.on 'connect', ->
   template.status = 'connected'
-  socket.emit 'chat:demand'
+  socket.emit 'chat:demand',
+    nick: template.userName
   socket.emit 'announcement:demand'
   socket.emit 'presence:demand'
 

@@ -69,6 +69,8 @@ app.post "/webhook", (req, res) ->
 
   if slack.userInfoById(req.body.user_id)
     avatar = slack.userInfoById(req.body.user_id)['profile']['image_72']
+    if process.env.ADMIN_NICK == "full"
+      adminNick = slack.userInfoById(req.body.user_id)['profile']['real_name']
   else
     avatar = "images/default_admin.png"
 
@@ -162,6 +164,8 @@ presence.on 'change', ()->
       if !!userInfo.is_bot    # Continue for loop in case is_bot is true. '!!'' take care of case when is_bot is undefined
         continue
       avatar = userInfo['profile']['image_72']
+      if process.env.ADMIN_NICK == "full"
+        username = userInfo['profile']['real_name']
     else
       avatar = "images/default_admin.png"
 

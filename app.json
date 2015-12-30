@@ -14,6 +14,10 @@
   "logo": "https://i.imgur.com/WNRjxyN.jpg",
   "success_url": "/",
   "env": {
+    "ORGANIZATION_NAME": {
+      "description": "A name of the organization which will be displayed in the webpage",
+      "required": false
+    },
     "SESSION_SECRET": {
       "description": "A secret key for verifying the integrity of signed cookies",
       "generator": "secret"
@@ -44,6 +48,10 @@
       "description": "Base url of the deployed application",
       "required": false,
       "value": "https://jinora.herokuapp.com"
+    },
+    "ADMIN_NICK": {
+      "description": "How to display the name of an admin. full for the full name, nick for the nickname (default)"
+      "required": false
     }
   }
 }

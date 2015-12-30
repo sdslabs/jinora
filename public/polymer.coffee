@@ -15,7 +15,7 @@ defaultNames = ["Killer Whale", "Giraffe", "Rabbit", "Polar Bear", "Cheetah", "S
 
 template.userName = prompt "Enter a nick:"
 
-template.avatar = "http://eightbitavatar.herokuapp.com/?id=" + escape(template.userName) + "&s=male&size=80"
+template.avatar = "http://api.adorable.io/avatars/80/" + escape(template.userName) + ".png"
 
 sendMessage = (msg)->
   socket.emit 'chat:msg',
@@ -31,7 +31,7 @@ showMessage = (msg)->
 
 template.sendMyMessage = () ->
   $input = $("#input")
-  
+
   if socket.socket.connected == false
     alert 'Please wait while we reconnect'
   else if $input.val().trim() != ''

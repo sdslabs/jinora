@@ -77,7 +77,7 @@ app.post "/webhook", (req, res) ->
   # Broadcast the message to all clients
   msg =
     message: message,
-    nick: req.body.user_name,
+    nick: adminNick,
     admin: 1,
     online: 1,
     timestamp: (new Date).getTime()

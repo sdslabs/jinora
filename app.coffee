@@ -57,12 +57,12 @@ app.post "/webhook", (req, res) ->
   return res.json {} if req.body.user_id == 'USLACKBOT'
 
   message = slack.parseMessage(req.body.text)
+  adminNick = req.body.user_name
 
   # If the message is not meant to be sent to jinora users, but it is a command meant to be interpreted by jinora
   isCommand = (req.body.text[0] == "!")
   if isCommand
     commandText = message.substr(1)
-    adminNick = req.body.user_name
     interpretCommand(commandText,adminNick)
     res.send ""
     return

@@ -80,6 +80,7 @@ socket.on 'announcement:data', (data)->
   else
     $("#announcement-area")[0].style.display = "none"
   $("#chat-heading")[0].innerHTML = data['heading']
+  template.showMembers = data['showMembers']
   document.title = data['pageTitle']
 
 socket.on 'chat:log', (log)->

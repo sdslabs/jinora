@@ -7,6 +7,7 @@ module.exports = (ioObject, slackObject) ->
     heading: if !!process.env.ORGANIZATION_NAME then ("#Chat with " + process.env.ORGANIZATION_NAME) else "#chat"
     pageTitle: if !!process.env.ORGANIZATION_NAME then ("Chat with " + process.env.ORGANIZATION_NAME) else "#chat"
     text: ""
+    showMembers: if !!process.env.HIDE_ADMIN_NAMES then false else true
 
   helpText = "*Usage:*\n\t" +
   "!ban nick <nick> _to ban a nick._\n\t" +

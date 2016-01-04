@@ -53,6 +53,10 @@
       "description": "How to display the name of an admin. full for the full name, nick for the nickname (default)",
       "required": false
     },
+    "HIDE_ADMIN_NAMES": {
+      "description": "Whether or not to display the names of the admins in the sidebar (if the variable has a value, then they are hidden)",
+      "required": false
+    },
     "MEMBER_JOIN_NOTIFY": {
       "description": "Whether or not to notify admins of members joining. Values can be on and off (default)",
       "required": false

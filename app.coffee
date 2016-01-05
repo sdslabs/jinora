@@ -45,7 +45,7 @@ interpretCommand = (commandText, adminNick) ->
     announcementHandler.interpret commandText, adminNick
   else if (firstWord in clearCommands)
     messages = new CBuffer(parseInt(process.env.BUFFER_SIZE))
-  else
+  else if firstWord is "help"
     announcementHandler.showHelp()
 
 # Slack outgoing webhook is caught here

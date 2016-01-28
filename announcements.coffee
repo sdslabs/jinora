@@ -16,7 +16,7 @@ module.exports = (ioObject, slackObject) ->
   "!announcement _to see the current announcement._\n\t" +
   "!announce <announcement> _to change announcement._\n\t" +
   "!announce - _to remove announcement._\n\t" +
-  "!clear To remove all the latest messages from the public view._\n\t" +
+  "!clear _to remove all the latest messages from the public view._\n\t" +
   "!help _to show this message._"
 
   io.route 'announcement:demand', (req)->

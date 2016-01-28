@@ -44,7 +44,7 @@
 
         <core-drawer-panel class="drawer-panel" drawerwidth="280px" rightdrawer responsivewidth="600px" disableswipe="false"  touch-action="">
 
-          <div class="right-panel" drawer >
+          <div class="right-panel scroller" drawer >
             <div class="core-header" id="announcement-area" style="display: none" >
                 <div class="announcement-title">ANNOUNCEMENT</div>
                 <p id="announcement-text"></p>
@@ -54,7 +54,7 @@
 
           <div class="header-panel" main="" mode="seamed">
             <section layout vertical fit class="chat-area">
-              <div flex class="chat-list">
+              <div flex class="chat-list scroller">
                 <template repeat="{{message in messages}}">
                   <x-chat-list color="{{message.color}}" avatar="{{message.avatar}}" nick="{{message.nick}}" message="{{message.message}}"  status="{{message.status}}" timestamp="{{message.timestamp}}"></x-chat-list>
                 </template>

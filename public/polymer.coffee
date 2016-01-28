@@ -1,12 +1,10 @@
 template = document.querySelector('#template')
-socket = io.connect document.location.origin,
-  reconnectionDelay: 200
-  reconnectionDelayMax: 1000
-  'sync disconnect on unload': true
+
+polymerLoaded = false
 
 template.announcement = ""
 
-template.status = 'connected'
+template.status = 'connecting'
 
 template.messages = []
 
@@ -17,6 +15,16 @@ defaultNames = ["Killer Whale", "Giraffe", "Rabbit", "Polar Bear", "Cheetah", "S
 template.userName = prompt "Enter a nick:"
 
 template.avatar = "http://api.adorable.io/avatars/80/" + escape(template.userName) + ".png"
+
+window.addEventListener 'polymer-ready', (e) ->
+  polymerLoaded = true
+
+  if template.status == 'connected'
+    onconnect()
+
+  # Set focus on the input element.
+  $("#input").focus()
+
 
 sendMessage = (msg)->
   socket.emit 'chat:msg',
@@ -45,6 +53,23 @@ template.checkKey = (e) ->
     template.sendMyMessage()
   e.preventDefault()
 
+onconnect = () ->
+  template.status = 'connected'
+  if polymerLoaded
+    socket.emit 'member:connect',
+      nick: template.userName
+    socket.emit 'chat:demand'
+    socket.emit 'announcement:demand'
+    socket.emit 'presence:demand'
+
+
+socket = io.connect document.location.origin,
+  reconnectionDelay: 200
+  reconnectionDelayMax: 1000
+  'sync disconnect on unload': true
+
+socket.on 'connect', onconnect
+
 socket.on 'disconnect', ->
   template.status = 'disconnected'
   socket.emit 'member:disconnect',
@@ -54,14 +79,6 @@ socket.on 'reconnect', ->
   template.status = 'connected'
   socket.emit 'member:connect',
     nick: template.userName
-
-socket.on 'connect', ->
-  template.status = 'connected'
-  socket.emit 'member:connect',
-    nick: template.userName
-  socket.emit 'chat:demand'
-  socket.emit 'announcement:demand'
-  socket.emit 'presence:demand'
 
 socket.on 'chat:msg', (msg)->
   defaultName = defaultNames[(Math.random() * defaultNames.length) >>> 0]
@@ -88,9 +105,3 @@ socket.on 'chat:log', (log)->
 
 socket.on 'presence:list', (list)->
   template.users = list
-
-# Set focus on the input element. Doesn't seem to work without using setTimeout.
-setTimeout ->
-  $("#input").focus()
-,1
-

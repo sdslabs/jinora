@@ -9,15 +9,18 @@ module.exports = (ioObject, slackObject) ->
     text: ""
     showMembers: if !!process.env.HIDE_ADMIN_NAMES then false else true
 
-  helpText = "*Usage:*\n\t" +
-  "!ban nick <nick> _to ban a nick._\n\t" +
-  "!ban user <nick> _to ban the user session corresponding to given nick._\n\t" +
-  "!unban nick <nick>\n\t!unban user <nick>\n\t" +
-  "!announcement _to see the current announcement._\n\t" +
-  "!announce <announcement> _to change announcement._\n\t" +
-  "!announce - _to remove announcement._\n\t" +
-  "!clear _to remove all the latest messages from the public view._\n\t" +
-  "!help _to show this message._"
+  helpText = """
+  *Usage:*
+  \t!ban nick <nick> _to ban a nick._
+  \t!ban user <nick> _to ban the user session corresponding to given nick._
+  \t!unban nick <nick>
+  \t!unban user <nick>
+  \t!announcement _to see the current announcement._
+  \t!announce <announcement> _to change announcement._
+  \t!announce - _to remove announcement._
+  \t!clear _to remove all the latest messages from the public view._
+  \t!help _to show this message._
+  """
 
   io.route 'announcement:demand', (req)->
     req.io.emit 'announcement:data', announcement

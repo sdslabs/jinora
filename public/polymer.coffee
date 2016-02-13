@@ -14,7 +14,7 @@ defaultNames = ["Killer Whale", "Giraffe", "Rabbit", "Polar Bear", "Cheetah", "S
 
 template.userName = prompt "Enter a nick:"
 
-template.avatar = "http://api.adorable.io/avatars/80/" + escape(template.userName) + ".png"
+template.avatar = "http://api.adorable.io/avatars/80/" + Math.random() + ".png"
 
 window.addEventListener 'polymer-ready', (e) ->
   polymerLoaded = true

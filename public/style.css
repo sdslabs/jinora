@@ -72,7 +72,8 @@ a{
 .right-panel{
    padding: 20px 25px 20px 30px;
    overflow-y: auto;
-   background-color: #f8f8fa
+   background-color: #f8f8fa;
+   height: 100%;
 }
 
 .announcement-title{

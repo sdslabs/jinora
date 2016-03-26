@@ -25,6 +25,7 @@ window.addEventListener 'polymer-ready', (e) ->
   # Set focus on the input element.
   $("#input").focus()
 
+Notification.requestPermission() if Notification.permission is "default"
 
 sendMessage = (msg)->
   socket.emit 'chat:msg',
@@ -37,6 +38,21 @@ showMessage = (msg)->
   template.async ()->
     chatDiv = document.querySelector('.chat-list');
     chatDiv.scrollTop = chatDiv.scrollHeight;
+
+
+showNotification = (msg) ->
+  notification = new Notification "SDSLabs chat",
+    icon: 'images/jinora.png',
+    body: msg.nick + ": " + msg.message
+
+  id = setTimeout () ->
+      notification.close()
+    , 5000
+
+  notification.onclick = () ->
+    window.focus();
+    notification.close();
+    clearTimeout(id);
 
 template.sendMyMessage = () ->
   $input = $("#input")
@@ -88,6 +104,9 @@ socket.on 'chat:msg', (msg)->
       sendMessage msg.message
     , 1
   else
+    showNotification msg if Notification.permission is "granted" \
+    and msg.nick isnt template.userName \
+    and document.hidden
     showMessage msg
 
 socket.on 'announcement:data', (data)->

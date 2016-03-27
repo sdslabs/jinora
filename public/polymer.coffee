@@ -16,6 +16,8 @@ template.userName = prompt "Enter a nick:"
 
 template.avatar = "http://api.adorable.io/avatars/80/" + escape(template.userName) + ".png"
 
+baseTitle = ""
+
 window.addEventListener 'polymer-ready', (e) ->
   polymerLoaded = true
 
@@ -24,6 +26,9 @@ window.addEventListener 'polymer-ready', (e) ->
 
   # Set focus on the input element.
   $("#input").focus()
+
+document.addEventListener 'visibilitychange', () ->
+  updateTitle.reset() if not document.hidden
 
 Notification.requestPermission() if Notification.permission is "default"
 
@@ -54,6 +59,29 @@ showNotification = (msg) ->
     notification.close();
     clearTimeout(id);
 
+
+updateTitle = {
+  increase : () ->
+    regex = /^.*\(([\d]+)\)$/g
+    result = regex.exec(document.title)
+    pending = if result? then parseInt(result[1]) else 0
+    pending += 1
+    document.title = baseTitle + " (" + pending + ")";
+
+  reset : () ->
+    document.title = baseTitle
+
+  }
+
+
+notifyIfGranted = (msg) ->
+  if Notification.permission is "granted" \
+  and msg.nick isnt template.userName \
+  and document.hidden
+    showNotification msg
+    updateTitle.increase()
+
+
 template.sendMyMessage = () ->
   $input = $("#input")
 
@@ -68,6 +96,9 @@ template.checkKey = (e) ->
   if e.which == 13
     template.sendMyMessage()
   e.preventDefault()
+
+template.resetTitle = (e) ->
+  updateTitle.reset()
 
 onconnect = () ->
   template.status = 'connected'
@@ -104,9 +135,7 @@ socket.on 'chat:msg', (msg)->
       sendMessage msg.message
     , 1
   else
-    showNotification msg if Notification.permission is "granted" \
-    and msg.nick isnt template.userName \
-    and document.hidden
+    notifyIfGranted msg
     showMessage msg
 
 socket.on 'announcement:data', (data)->
@@ -118,6 +147,7 @@ socket.on 'announcement:data', (data)->
   $("#chat-heading")[0].innerHTML = data['heading']
   template.showMembers = data['showMembers']
   document.title = data['pageTitle']
+  baseTitle = data['pageTitle']
 
 socket.on 'chat:log', (log)->
   log.map showMessage

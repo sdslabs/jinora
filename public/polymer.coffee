@@ -74,6 +74,14 @@ updateTitle = {
   }
 
 
+notifyIfGranted = (msg) ->
+  if Notification.permission is "granted" \
+  and msg.nick isnt template.userName \
+  and document.hidden
+    showNotification msg
+    updateTitle.increase()
+
+
 template.sendMyMessage = () ->
   $input = $("#input")
 
@@ -127,11 +135,7 @@ socket.on 'chat:msg', (msg)->
       sendMessage msg.message
     , 1
   else
-    if Notification.permission is "granted" \
-    and msg.nick isnt template.userName \
-    and document.hidden
-      showNotification msg
-      updateTitle.increase()
+    notifyIfGranted msg
     showMessage msg
 
 socket.on 'announcement:data', (data)->

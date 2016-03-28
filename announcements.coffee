@@ -6,6 +6,7 @@ module.exports = (ioObject, slackObject) ->
   announcement =
     heading: if !!process.env.ORGANIZATION_NAME then ("#Chat with " + process.env.ORGANIZATION_NAME) else "#chat"
     pageTitle: if !!process.env.ORGANIZATION_NAME then ("Chat with " + process.env.ORGANIZATION_NAME) else "#chat"
+    notificationTitle: if !!process.env.ORGANIZATION_NAME then (process.env.ORGANIZATION_NAME + " chat") else "#chat"
     text: ""
     showMembers: if !!process.env.HIDE_ADMIN_NAMES then false else true
 

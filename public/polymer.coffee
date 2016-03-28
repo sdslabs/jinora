@@ -18,6 +18,8 @@ template.avatar = "http://api.adorable.io/avatars/80/" + escape(template.userNam
 
 baseTitle = ""
 
+notificationTitle = ""
+
 window.addEventListener 'polymer-ready', (e) ->
   polymerLoaded = true
 
@@ -46,8 +48,9 @@ showMessage = (msg)->
 
 
 showNotification = (msg) ->
-  notification = new Notification "SDSLabs chat",
-    icon: 'images/jinora.png',
+  # icon is avatar_192 for admins and avatar for jinora users
+  notification = new Notification notificationTitle,
+    icon: msg.avatar192 or msg.avatar,
     body: msg.nick + ": " + msg.message
 
   id = setTimeout () ->
@@ -148,6 +151,7 @@ socket.on 'announcement:data', (data)->
   template.showMembers = data['showMembers']
   document.title = data['pageTitle']
   baseTitle = data['pageTitle']
+  notificationTitle = data['notificationTitle']
 
 socket.on 'chat:log', (log)->
   log.map showMessage

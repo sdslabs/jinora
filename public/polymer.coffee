@@ -66,7 +66,6 @@ updateTitle = {
     result = regex.exec(document.title)
     pending = if result? then parseInt(result[1]) else 0
     pending += 1
-    regex = /^(.*)(\([\d]+\))?$/g
     document.title = baseTitle + " (" + pending + ")";
 
   reset : () ->

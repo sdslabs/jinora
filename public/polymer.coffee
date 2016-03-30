@@ -50,7 +50,7 @@ showMessage = (msg)->
 showNotification = (msg) ->
   # icon is avatar_192 for admins and avatar for jinora users
   notification = new Notification notificationTitle,
-    icon: msg.avatar_192 or msg.avatar,
+    icon: msg.avatar192 or msg.avatar,
     body: msg.nick + ": " + msg.message
 
   id = setTimeout () ->

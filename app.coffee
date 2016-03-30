@@ -74,7 +74,7 @@ app.post "/webhook", (req, res) ->
   if slack.userInfoById(req.body.user_id)
     profile = slack.userInfoById(req.body.user_id)['profile']
     avatar = profile['image_72']
-    avatar_192 = profile['image_192']
+    avatar192 = profile['image_192']
     if process.env.ADMIN_NICK == "full"
       adminNick = slack.userInfoById(req.body.user_id)['profile']['real_name']
   else
@@ -88,7 +88,7 @@ app.post "/webhook", (req, res) ->
     online: 1,
     timestamp: (new Date).getTime(),
     avatar: avatar,
-    avatar_192: avatar_192
+    avatar192: avatar192
 
   # Broadcast the message to all connected clients
   app.io.broadcast "chat:msg", msg

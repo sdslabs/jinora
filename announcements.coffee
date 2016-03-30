@@ -4,7 +4,7 @@ module.exports = (ioObject, slackObject) ->
   io = ioObject
   slack = slackObject
   announcement =
-    heading: "#Chat with " + process.env.ORGANIZATION_NAME
+    chatHeading: "#Chat with " + process.env.ORGANIZATION_NAME
     pageTitle: "Chat with " + process.env.ORGANIZATION_NAME
     notificationTitle: process.env.ORGANIZATION_NAME + " chat"
     text: ""

@@ -147,7 +147,7 @@ socket.on 'announcement:data', (data)->
     $("#announcement-area")[0].style.display = "block"
   else
     $("#announcement-area")[0].style.display = "none"
-  $("#chat-heading")[0].innerHTML = data['heading']
+  $("#chat-heading")[0].innerHTML = data['chatHeading']
   template.showMembers = data['showMembers']
   document.title = data['pageTitle']
   baseTitle = data['pageTitle']

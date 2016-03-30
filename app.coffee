@@ -17,6 +17,10 @@ if !!process.env.RESERVED_NICKS_URL
 else
   console.error "ERROR: banning won't work as RESERVED_NICKS_URL is not provided"
 
+if !process.env.ORGANIZATION_NAME
+  console.error "Please provide an ORGANIZATION_NAME environment variable."
+  process.exit 1
+
 # This is a circular buffer of messages, which are stored in memory
 messages = new CBuffer(parseInt(process.env.BUFFER_SIZE))
 onlineMemberList = []

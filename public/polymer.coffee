@@ -12,7 +12,21 @@ template.users = []
 
 defaultNames = ["Killer Whale", "Giraffe", "Rabbit", "Polar Bear", "Cheetah", "Snow Leopard", "Eagle", "Fox", "Panda", "Salamander", "Jackal", "Elephant ", "Lion", "Horse", "Monkey", "Penguin ", "Wolf", "Dolphin", "Tiger", "Cat", "Shinigami", "Korra", "Aang", "Izumi", "Katara"]
 
-template.userName = prompt "Enter a nick:"
+# template.userName = prompt "Enter a nickd:"
+
+################## login screen #################
+#doesnot allow user to change name during runtime 
+
+$('.showinput').one 'click', (event) ->
+  event.preventDefault()
+  $('.login-div').fadeOut 500
+  template.userName = $('.getinput').val()
+  $('.loginscreen h1').append ' ' + $('.getinput').val()
+  $('.loginscreen').addClass('form-success').delay 1500
+  $('.loginscreen').fadeOut()
+  return
+
+################# ends here ####################
 
 template.avatar = "https://api.adorable.io/avatars/80/" + escape(template.userName) + ".png"
 

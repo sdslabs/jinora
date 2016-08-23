@@ -28,6 +28,7 @@ $('.getinput').keydown (event) ->
     else
       name = name
     template.userName = name
+    template.avatar = "https://api.adorable.io/avatars/80/" + escape(template.userName) + ".png"
     $('.loginscreen h1').append ' ' + name
     $('.loginscreen').addClass('form-success').delay 1200
     $('.loginscreen').fadeOut()
@@ -35,7 +36,6 @@ $('.getinput').keydown (event) ->
 
 ################# ends here ####################
 
-template.avatar = "https://api.adorable.io/avatars/80/" + escape(template.userName) + ".png"
 
 baseTitle = ""
 

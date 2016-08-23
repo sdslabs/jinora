@@ -17,13 +17,20 @@ defaultNames = ["Killer Whale", "Giraffe", "Rabbit", "Polar Bear", "Cheetah", "S
 ################## login screen #################
 #doesnot allow user to change name during runtime 
 
-$('.showinput').one 'click', (event) ->
-  event.preventDefault()
-  $('.login-div').fadeOut 500
-  template.userName = $('.getinput').val()
-  $('.loginscreen h1').append ' ' + $('.getinput').val()
-  $('.loginscreen').addClass('form-success').delay 1500
-  $('.loginscreen').fadeOut()
+name = ''
+$('.getinput').keydown (event) ->
+  if event.keyCode == 13
+    event.preventDefault()
+    $('.login-div').fadeOut 500
+    name = $('.getinput').val()
+    if name == '' or name == null
+      name = defaultNames[Math.floor(Math.random() * defaultNames.length)]
+    else
+      name = name
+    template.userName = name
+    $('.loginscreen h1').append ' ' + name
+    $('.loginscreen').addClass('form-success').delay 1200
+    $('.loginscreen').fadeOut()
   return
 
 ################# ends here ####################

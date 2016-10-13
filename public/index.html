@@ -1,75 +1,103 @@
 <!DOCTYPE html>
 <html>
 
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="description" content="Jinora Public chat">
-    <meta name="author" content="SDSLabs">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="description" content="Jinora Public chat">
+  <meta name="author" content="SDSLabs">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
 
-    <title>#chat</title>
-    <link rel="icon" sizes="302x302" href="images/jinora.png">
-    <link href='https://fonts.googleapis.com/css?family=Roboto:400,300' rel='stylesheet' type='text/css'>
-    <!-- For all styles: <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,900italic,900,700italic,700,500italic,300italic,400italic,300,100italic,100' rel='stylesheet' type='text/css'>-->
+  <title>#chat</title>
+  <link rel="icon" sizes="302x302" href="images/jinora.png">
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,300' rel='stylesheet' type='text/css'>
+  <!-- For all styles: <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,900italic,900,700italic,700,500italic,300italic,400italic,300,100italic,100' rel='stylesheet' type='text/css'>-->
 
-    <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
+  <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
 
-    <link rel="import" href="bower_components/core-scaffold/core-scaffold.html">
-    <link rel="import" href="bower_components/core-item/core-item.html">
-    <link rel="import" href="bower_components/core-icons/social-icons.html">
-    <link rel="import" href="bower_components/paper-input/paper-input.html">
-    <link rel="import" href="bower_components/paper-fab/paper-fab.html">
-    <link rel="import" href="x-chat-list.html">
-    <link rel="import" href="x-user-list.html">
-    <link rel="stylesheet" href="style.css">
-  </head>
+  <link rel="import" href="bower_components/core-scaffold/core-scaffold.html">
+  <link rel="import" href="bower_components/core-item/core-item.html">
+  <link rel="import" href="bower_components/core-icons/social-icons.html">
+  <link rel="import" href="bower_components/paper-input/paper-input.html">
+  <link rel="import" href="bower_components/paper-fab/paper-fab.html">
+  <link rel="import" href="x-chat-list.html">
+  <link rel="import" href="x-user-list.html">
+  <link rel="stylesheet" href="style.css">
+</head>
 
-  <body layout vertical fullbleed>
+<body layout vertical fullbleed>
+  <!-- LOGIN SCREEN starts -->
+  <div class="wrapper loginscreen">
+    <div class="container">
+      <h1>Welcome</h1>
 
-    <template id="template" is="auto-binding">
+      <div class="login-div">
+        <input type="text" placeholder="Username" class="getinput">
+        <!-- <button id="login-button" class="showinput">Start chatting !!</button> -->
+      </div>
+    </div>
 
-      <core-header-panel flex class="top-header-panel" mode="seamed">
+    <ul class="bg-bubbles">
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+  </div>
+  <!-- LOGIN SCREEN ends -->
+  <template id="template" is="auto-binding">
 
-        <div class="core-header top-toolbar">
-          <div id="chat-heading" >#chat</div>
-          <div  style="background-image: url({{avatar}})" class="myavatar {{status}}"></div>
+    <core-header-panel flex class="top-header-panel" mode="seamed">
+
+      <div class="core-header top-toolbar">
+        <div id="chat-heading" >#chat</div>
+        <div  style="background-image: url({{avatar}})" class="myavatar {{status}}"></div>
+      </div>
+
+
+      <core-drawer-panel class="drawer-panel" drawerwidth="280px" rightdrawer responsivewidth="600px" disableswipe="false"  touch-action="">
+
+        <div class="right-panel scroller" drawer >
+          <div class="core-header" id="announcement-area" style="display: none" >
+            <div class="announcement-title">ANNOUNCEMENT</div>
+            <p id="announcement-text"></p>
+          </div>
+          <x-user-list users="{{users}}" showMembers="{{showMembers}}"></x-user-list>
         </div>
 
-
-        <core-drawer-panel class="drawer-panel" drawerwidth="280px" rightdrawer responsivewidth="600px" disableswipe="false"  touch-action="">
-
-          <div class="right-panel scroller" drawer >
-            <div class="core-header" id="announcement-area" style="display: none" >
-                <div class="announcement-title">ANNOUNCEMENT</div>
-                <p id="announcement-text"></p>
+        <div class="header-panel" main="" mode="seamed">
+          <section layout vertical fit class="chat-area">
+            <div flex class="chat-list scroller">
+              <template repeat="{{message in messages}}">
+                <x-chat-list color="{{message.color}}" avatar="{{message.avatar}}" nick="{{message.nick}}" message="{{message.message}}"  status="{{message.status}}" timestamp="{{message.timestamp}}"></x-chat-list>
+              </template>
             </div>
-            <x-user-list users="{{users}}" showMembers="{{showMembers}}"></x-user-list>
-          </div>
+            <div class="send-message" layout="" horizontal="">
+              <paper-input flex label="Message" id="input" value="{{input}}" on-click="{{resetTitle}}" on-keyup="{{checkKey}}"></paper-input>
+            </div>
+          </section>
+        </div>
+      </core-drawer-panel>
 
-          <div class="header-panel" main="" mode="seamed">
-            <section layout vertical fit class="chat-area">
-              <div flex class="chat-list scroller">
-                <template repeat="{{message in messages}}">
-                  <x-chat-list color="{{message.color}}" avatar="{{message.avatar}}" nick="{{message.nick}}" message="{{message.message}}"  status="{{message.status}}" timestamp="{{message.timestamp}}"></x-chat-list>
-                </template>
-              </div>
-              <div class="send-message" layout="" horizontal="">
-                <paper-input flex label="Message" id="input" value="{{input}}" on-click="{{resetTitle}}" on-keyup="{{checkKey}}"></paper-input>
-              </div>
-            </section>
-          </div>
-        </core-drawer-panel>
+    </core-header-panel>
 
-      </core-header-panel>
+  </template>
 
-    </template>
-
-    <script src="polymer.js"></script>
-  </body>
+  <script src="polymer.js"></script>
+</body>
 </html>

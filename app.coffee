@@ -10,6 +10,7 @@ CBuffer = require('CBuffer');
 slack = require('slack-utils/api')(process.env.API_TOKEN, process.env.INCOMING_HOOK_URL)
 presence = require('./presence.coffee')
 rate_limit = require('./rate_limit.coffee')
+platform = require('platform');
 app = express().http().io()
 announcementHandler = require('./announcements.coffee')(app.io, slack)
 if !!process.env.RESERVED_NICKS_URL
@@ -162,7 +163,10 @@ app.io.route 'chat:demand', (req)->
 
 app.io.route 'member:connect', (req)->
   if process.env.MEMBER_JOIN_NOTIFY == "on"
-    slack.postMessage req.data.nick + " entered channel", process.env.SLACK_CHANNEL, "Jinora"
+    userInfo = platform.parse req.headers['user-agent']
+    userIp = req.headers['x-forwarded-for']
+    slack.postMessage req.data.nick + " entered channel\n  _" + userInfo + " (" + userIp + ")_", process.env.SLACK_CHANNEL, "Jinora"
+
 app.io.route 'member:disconnect', (req)->
   if process.env.MEMBER_JOIN_NOTIFY == "on"
     slack.postMessage req.data.nick + " left channel", process.env.SLACK_CHANNEL, "Jinora"

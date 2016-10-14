@@ -10,7 +10,7 @@ CBuffer = require('CBuffer');
 slack = require('slack-utils/api')(process.env.API_TOKEN, process.env.INCOMING_HOOK_URL)
 presence = require('./presence.coffee')
 rate_limit = require('./rate_limit.coffee')
-platform = require('platform');
+platform = require('platform')
 app = express().http().io()
 announcementHandler = require('./announcements.coffee')(app.io, slack)
 if !!process.env.RESERVED_NICKS_URL

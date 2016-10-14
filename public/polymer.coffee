@@ -32,6 +32,7 @@ $('.getinput').keydown (event) ->
     $('.loginscreen h1').append ' ' + name
     $('.loginscreen').addClass('form-success').delay 1200
     $('.loginscreen').fadeOut()
+    connectToServer()
   return
 
 ################# ends here ####################
@@ -133,49 +134,52 @@ onconnect = () ->
     socket.emit 'announcement:demand'
     socket.emit 'presence:demand'
 
+connectToServer = ->
+  root = exports ? this
+  root.socket = io.connect document.location.origin,
+    reconnectionDelay: 200
+    reconnectionDelayMax: 1000
+    'sync disconnect on unload': true
+  
+  socket.on 'connect', onconnect
+  
+  socket.on 'disconnect', ->
+    template.status = 'disconnected'
+    socket.emit 'member:disconnect',
+      nick: template.userName
+  
+  socket.on 'reconnect', ->
+    template.status = 'connected'
+    socket.emit 'member:connect',
+      nick: template.userName
+  
+  socket.on 'chat:msg', (msg)->
+    defaultName = defaultNames[(Math.random() * defaultNames.length) >>> 0]
+    if msg.invalidNick
+      setTimeout () ->
+        msg.nick = template.userName = prompt('Sorry! You can\'t have this username.\nPlease enter another username', defaultName) or defaultName
+        sendMessage msg.message
+      , 1
+    else
+      notifyIfGranted msg
+      showMessage msg
+  
+  socket.on 'announcement:data', (data)->
+    if data['text'].length > 2
+      $("#announcement-text")[0].innerHTML = data['text']
+      $("#announcement-area")[0].style.display = "block"
+    else
+      $("#announcement-area")[0].style.display = "none"
+    $("#chat-heading")[0].innerHTML = data['chatHeading']
+    template.showMembers = data['showMembers']
+    document.title = data['pageTitle']
+    baseTitle = data['pageTitle']
+    notificationTitle = data['notificationTitle']
+  
+  socket.on 'chat:log', (log)->
+    log.map showMessage
+  
+  socket.on 'presence:list', (list)->
+    template.users = list
 
-socket = io.connect document.location.origin,
-  reconnectionDelay: 200
-  reconnectionDelayMax: 1000
-  'sync disconnect on unload': true
-
-socket.on 'connect', onconnect
-
-socket.on 'disconnect', ->
-  template.status = 'disconnected'
-  socket.emit 'member:disconnect',
-    nick: template.userName
-
-socket.on 'reconnect', ->
-  template.status = 'connected'
-  socket.emit 'member:connect',
-    nick: template.userName
-
-socket.on 'chat:msg', (msg)->
-  defaultName = defaultNames[(Math.random() * defaultNames.length) >>> 0]
-  if msg.invalidNick
-    setTimeout () ->
-      msg.nick = template.userName = prompt('Sorry! You can\'t have this username.\nPlease enter another username', defaultName) or defaultName
-      sendMessage msg.message
-    , 1
-  else
-    notifyIfGranted msg
-    showMessage msg
-
-socket.on 'announcement:data', (data)->
-  if data['text'].length > 2
-    $("#announcement-text")[0].innerHTML = data['text']
-    $("#announcement-area")[0].style.display = "block"
-  else
-    $("#announcement-area")[0].style.display = "none"
-  $("#chat-heading")[0].innerHTML = data['chatHeading']
-  template.showMembers = data['showMembers']
-  document.title = data['pageTitle']
-  baseTitle = data['pageTitle']
-  notificationTitle = data['notificationTitle']
-
-socket.on 'chat:log', (log)->
-  log.map showMessage
-
-socket.on 'presence:list', (list)->
-  template.users = list
+  return

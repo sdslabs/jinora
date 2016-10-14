@@ -15,10 +15,10 @@ announcementHandler = require('./announcements.coffee')(app.io, slack)
 if !!process.env.RESERVED_NICKS_URL
   userVerifier = require('./user.coffee')(slack)
 else
-  console.error "ERROR: banning won't work as RESERVED_NICKS_URL is not provided"
+  console.error "WARNING: banning won't work as RESERVED_NICKS_URL is not provided"
 
 if !process.env.ORGANIZATION_NAME
-  console.error "Please provide an ORGANIZATION_NAME environment variable."
+  console.error "ERROR: Please provide an ORGANIZATION_NAME environment variable."
   process.exit 1
 
 # This is a circular buffer of messages, which are stored in memory

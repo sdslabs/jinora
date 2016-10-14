@@ -12,12 +12,15 @@ template.users = []
 
 defaultNames = ["Killer Whale", "Giraffe", "Rabbit", "Polar Bear", "Cheetah", "Snow Leopard", "Eagle", "Fox", "Panda", "Salamander", "Jackal", "Elephant ", "Lion", "Horse", "Monkey", "Penguin ", "Wolf", "Dolphin", "Tiger", "Cat", "Shinigami", "Korra", "Aang", "Izumi", "Katara"]
 
-# template.userName = prompt "Enter a nickd:"
+baseTitle = ""
+
+notificationTitle = ""
+
+pendingNotifications = 0
+
 
 ################## login screen #################
-#doesnot allow user to change name during runtime 
 
-name = ''
 $('.getinput').keydown (event) ->
   if event.keyCode == 13
     event.preventDefault()
@@ -25,22 +28,17 @@ $('.getinput').keydown (event) ->
     name = $('.getinput').val()
     if name == '' or name == null
       name = defaultNames[Math.floor(Math.random() * defaultNames.length)]
-    else
-      name = name
     template.userName = name
     template.avatar = "https://api.adorable.io/avatars/80/" + escape(template.userName) + ".png"
     $('.loginscreen h1').append ' ' + name
     $('.loginscreen').addClass('form-success').delay 1200
     $('.loginscreen').fadeOut()
-    connectToServer()
-  return
+    # If not connected yet, nick will be registered in onconnect() function
+    if template.status == 'connected' and polymerLoaded
+      socket.emit 'member:connect',
+        nick: template.userName
 
 ################# ends here ####################
-
-
-baseTitle = ""
-
-notificationTitle = ""
 
 window.addEventListener 'polymer-ready', (e) ->
   polymerLoaded = true
@@ -51,7 +49,7 @@ window.addEventListener 'polymer-ready', (e) ->
   # Set focus on the input element.
   $("#input").focus()
 
-document.addEventListener 'visibilitychange', () ->
+$(document).on 'visibilitychange', () ->
   updateTitle.reset() if not document.hidden
 
 Notification.requestPermission() if Notification.permission is "default"
@@ -65,8 +63,8 @@ sendMessage = (msg)->
 showMessage = (msg)->
   template.messages.push msg
   template.async ()->
-    chatDiv = document.querySelector('.chat-list');
-    chatDiv.scrollTop = chatDiv.scrollHeight;
+    chatDiv = document.querySelector('.chat-list')
+    chatDiv.scrollTop = chatDiv.scrollHeight
 
 
 showNotification = (msg) ->
@@ -80,23 +78,20 @@ showNotification = (msg) ->
     , 5000
 
   notification.onclick = () ->
-    window.focus();
-    notification.close();
-    clearTimeout(id);
+    window.focus()
+    notification.close()
+    clearTimeout(id)
 
 
-updateTitle = {
+updateTitle =
   increase : () ->
-    regex = /^.*\(([\d]+)\)$/g
-    result = regex.exec(document.title)
-    pending = if result? then parseInt(result[1]) else 0
-    pending += 1
-    document.title = baseTitle + " (" + pending + ")";
+    pendingNotifications += 1
+    document.title = "(" + pendingNotifications + ") " + baseTitle
 
   reset : () ->
     document.title = baseTitle
+    pendingNotifications = 0
 
-  }
 
 
 notifyIfGranted = (msg) ->
@@ -128,58 +123,55 @@ template.resetTitle = (e) ->
 onconnect = () ->
   template.status = 'connected'
   if polymerLoaded
-    socket.emit 'member:connect',
-      nick: template.userName
+    if template.userName
+      socket.emit 'member:connect',
+        nick: template.userName
     socket.emit 'chat:demand'
     socket.emit 'announcement:demand'
     socket.emit 'presence:demand'
 
-connectToServer = ->
-  root = exports ? this
-  root.socket = io.connect document.location.origin,
-    reconnectionDelay: 200
-    reconnectionDelayMax: 1000
-    'sync disconnect on unload': true
-  
-  socket.on 'connect', onconnect
-  
-  socket.on 'disconnect', ->
-    template.status = 'disconnected'
-    socket.emit 'member:disconnect',
-      nick: template.userName
-  
-  socket.on 'reconnect', ->
-    template.status = 'connected'
-    socket.emit 'member:connect',
-      nick: template.userName
-  
-  socket.on 'chat:msg', (msg)->
-    defaultName = defaultNames[(Math.random() * defaultNames.length) >>> 0]
-    if msg.invalidNick
-      setTimeout () ->
-        msg.nick = template.userName = prompt('Sorry! You can\'t have this username.\nPlease enter another username', defaultName) or defaultName
-        sendMessage msg.message
-      , 1
-    else
-      notifyIfGranted msg
-      showMessage msg
-  
-  socket.on 'announcement:data', (data)->
-    if data['text'].length > 2
-      $("#announcement-text")[0].innerHTML = data['text']
-      $("#announcement-area")[0].style.display = "block"
-    else
-      $("#announcement-area")[0].style.display = "none"
-    $("#chat-heading")[0].innerHTML = data['chatHeading']
-    template.showMembers = data['showMembers']
-    document.title = data['pageTitle']
-    baseTitle = data['pageTitle']
-    notificationTitle = data['notificationTitle']
-  
-  socket.on 'chat:log', (log)->
-    log.map showMessage
-  
-  socket.on 'presence:list', (list)->
-    template.users = list
+socket = io.connect document.location.origin,
+  reconnectionDelay: 200
+  reconnectionDelayMax: 1000
+  'sync disconnect on unload': true
 
-  return
+socket.on 'connect', onconnect
+
+socket.on 'disconnect', ->
+  template.status = 'disconnected'
+  socket.emit 'member:disconnect',
+    nick: template.userName
+
+socket.on 'reconnect', ->
+  template.status = 'connected'
+  socket.emit 'member:connect',
+    nick: template.userName
+
+socket.on 'chat:msg', (msg)->
+  defaultName = defaultNames[(Math.random() * defaultNames.length) >>> 0]
+  if msg.invalidNick
+    setTimeout () ->
+      msg.nick = template.userName = prompt('Sorry! You can\'t have this username.\nPlease enter another username', defaultName) or defaultName
+      sendMessage msg.message
+    , 1
+  else
+    notifyIfGranted msg
+    showMessage msg
+
+socket.on 'announcement:data', (data)->
+  if data['text'].length > 2
+    $("#announcement-text")[0].innerHTML = data['text']
+    $("#announcement-area")[0].style.display = "block"
+  else
+    $("#announcement-area")[0].style.display = "none"
+  $("#chat-heading")[0].innerHTML = data['chatHeading']
+  template.showMembers = data['showMembers']
+  document.title = data['pageTitle']
+  baseTitle = data['pageTitle']
+  notificationTitle = data['notificationTitle']
+
+socket.on 'chat:log', (log)->
+  log.map showMessage
+
+socket.on 'presence:list', (list)->
+  template.users = list

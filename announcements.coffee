@@ -19,6 +19,7 @@ module.exports = (ioObject, slackObject) ->
   \t!announcement _to see the current announcement._
   \t!announce <announcement> _to change announcement._
   \t!announce - _to remove announcement._
+  \t!info <nick> _to get user info._
   \t!clear _to remove all the latest messages from the public view._
   \t!help _to show this message._
   """

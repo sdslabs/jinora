@@ -10,9 +10,9 @@ CBuffer = require('CBuffer');
 slack = require('slack-utils/api')(process.env.API_TOKEN, process.env.INCOMING_HOOK_URL)
 presence = require('./presence.coffee')
 rate_limit = require('./rate_limit.coffee')
-platform = require('platform')
 app = express().http().io()
 announcementHandler = require('./announcements.coffee')(app.io, slack)
+userInfoHandler = require('./userinfo.coffee')(app.io, slack)
 if !!process.env.RESERVED_NICKS_URL
   userVerifier = require('./user.coffee')(slack)
 else
@@ -39,6 +39,7 @@ interpretCommand = (commandText, adminNick) ->
   userVerifierCommands = ["ban", "unban"]
   announcementCommands = ["announce", "announcement"]
   clearCommands = ["clean", "clear"]
+  userInfoCommands = ["info"]
   firstWord = commandText.split(' ')[0]
   if (firstWord in userVerifierCommands)
     if(userVerifier)
@@ -48,6 +49,8 @@ interpretCommand = (commandText, adminNick) ->
       slack.postMessage errorText, process.env.SLACK_CHANNEL, "Jinora"
   else if (firstWord in announcementCommands)
     announcementHandler.interpret commandText, adminNick
+  else if (firstWord in userInfoCommands)
+    userInfoHandler.interpret commandText
   else if (firstWord in clearCommands)
     messages = new CBuffer(parseInt(process.env.BUFFER_SIZE))
   else if firstWord is "help"
@@ -163,9 +166,9 @@ app.io.route 'chat:demand', (req)->
 
 app.io.route 'member:connect', (req)->
   if process.env.MEMBER_JOIN_NOTIFY == "on"
-    userInfo = platform.parse req.headers['user-agent']
-    userIp = req.headers['x-forwarded-for']
-    slack.postMessage req.data.nick + " entered channel\n  _" + userInfo + " (" + userIp + ")_", process.env.SLACK_CHANNEL, "Jinora"
+    userInfoHandler.addUser req
+    slack.postMessage req.data.nick + " entered channel", process.env.SLACK_CHANNEL, "Jinora"
+    userInfoHandler.interpret "info " + req.data.nick
 
 app.io.route 'member:disconnect', (req)->
   if process.env.MEMBER_JOIN_NOTIFY == "on"

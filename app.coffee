@@ -165,10 +165,9 @@ app.io.route 'chat:demand', (req)->
   req.io.emit 'chat:log', logs
 
 app.io.route 'member:connect', (req)->
+  userInfoHandler.addUser req
   if process.env.MEMBER_JOIN_NOTIFY == "on"
-    userInfoHandler.addUser req
     slack.postMessage req.data.nick + " entered channel", process.env.SLACK_CHANNEL, "Jinora"
-    userInfoHandler.interpret "info " + req.data.nick
 
 app.io.route 'member:disconnect', (req)->
   if process.env.MEMBER_JOIN_NOTIFY == "on"

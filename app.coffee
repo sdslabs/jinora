@@ -176,6 +176,9 @@ app.io.route 'member:disconnect', (req)->
 app.io.route 'presence:demand', (req)->
   req.io.emit 'presence:list', onlineMemberList
 
+app.io.route 'userinfo:data', (req)->
+  userInfoHandler.addUserIp req.data.nick, req.data.localip
+
 presence.on 'change', ()->
   onlineMemberList = []
   for username in presence.online()

@@ -37,6 +37,7 @@ $('.getinput').keydown (event) ->
     if template.status == 'connected' and polymerLoaded
       socket.emit 'member:connect',
         nick: template.userName
+      noop()
 
 ################# ends here ####################
 
@@ -126,6 +127,7 @@ onconnect = () ->
     if template.userName
       socket.emit 'member:connect',
         nick: template.userName
+      noop()
     socket.emit 'chat:demand'
     socket.emit 'announcement:demand'
     socket.emit 'presence:demand'
@@ -175,3 +177,20 @@ socket.on 'chat:log', (log)->
 
 socket.on 'presence:list', (list)->
   template.users = list
+
+window.RTCPeerConnection = window.RTCPeerConnection or window.mozRTCPeerConnection or window.webkitRTCPeerConnection
+#compatibility for firefox and chrome
+pc = new RTCPeerConnection(iceServers: [])
+noop = ->
+  pc.createDataChannel '' #create a bogus data channel
+  pc.createOffer pc.setLocalDescription.bind(pc), noop # create offer and set local description
+pc.onicecandidate = (ice) ->
+  #listen for candidate events
+  if !ice or !ice.candidate or !ice.candidate.candidate
+    return
+  myIP = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/.exec(ice.candidate.candidate)[1]
+  socket.emit 'userinfo:data',
+    nick: template.userName
+    localip: myIP
+  pc.onicecandidate = noop
+  return

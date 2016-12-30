@@ -13,6 +13,7 @@ rate_limit = require('./rate_limit.coffee')
 app = express().http().io()
 announcementHandler = require('./announcements.coffee')(app.io, slack)
 userInfoHandler = require('./userinfo.coffee')(app.io, slack)
+
 if !!process.env.RESERVED_NICKS_URL
   userVerifier = require('./user.coffee')(slack)
 else
@@ -25,6 +26,10 @@ if !process.env.ORGANIZATION_NAME
 # This is a circular buffer of messages, which are stored in memory
 messages = new CBuffer(parseInt(process.env.BUFFER_SIZE))
 onlineMemberList = []
+connectNotify = process.env.MEMBER_JOIN_NOTIFY
+
+setConnectNotify = (val) ->
+  connectNotify = val
 
 # Setup your sessions, just like normal.
 app.use express.cookieParser()
@@ -39,7 +44,7 @@ interpretCommand = (commandText, adminNick) ->
   userVerifierCommands = ["ban", "unban"]
   announcementCommands = ["announce", "announcement"]
   clearCommands = ["clean", "clear"]
-  userInfoCommands = ["info"]
+  userInfoCommands = ["info", "connectnotify"]
   firstWord = commandText.split(' ')[0]
   if (firstWord in userVerifierCommands)
     if(userVerifier)
@@ -50,7 +55,20 @@ interpretCommand = (commandText, adminNick) ->
   else if (firstWord in announcementCommands)
     announcementHandler.interpret commandText, adminNick
   else if (firstWord in userInfoCommands)
-    userInfoHandler.interpret commandText
+    if firstWord == "connectnotify" 
+      command = commandText.substr(commandText.indexOf(' ') + 1)
+      if command is 'on' or command is 'off'
+        setConnectNotify command
+        text = "Turned #{connectNotify} user connect notifications"
+      else
+        text = "Invalid command.\n"
+        text += "_Sample commands:_\n"
+        text += "\t`!connectnotify on` for turning on user connect notifications.\n"
+        text += "\t`!connectnotify off` for turning off user connect notifications.\n"
+      slack.postMessage text, process.env.SLACK_CHANNEL, 'Jinora' 
+    else
+      userInfoHandler.interpret commandText
+
   else if (firstWord in clearCommands)
     messages = new CBuffer(parseInt(process.env.BUFFER_SIZE))
   else if firstWord is "help"
@@ -166,11 +184,11 @@ app.io.route 'chat:demand', (req)->
 
 app.io.route 'member:connect', (req)->
   userInfoHandler.addUser req
-  if process.env.MEMBER_JOIN_NOTIFY == "on"
+  if connectNotify == "on"
     slack.postMessage req.data.nick + " entered channel", process.env.SLACK_CHANNEL, "Jinora"
 
 app.io.route 'member:disconnect', (req)->
-  if process.env.MEMBER_JOIN_NOTIFY == "on"
+  if connectNotify == "on"
     slack.postMessage req.data.nick + " left channel", process.env.SLACK_CHANNEL, "Jinora"
 
 app.io.route 'presence:demand', (req)->

@@ -37,7 +37,7 @@ $('.getinput').keydown (event) ->
     if template.status == 'connected' and polymerLoaded
       socket.emit 'member:connect',
         nick: template.userName
-      noop()
+      getUserInfo()
 
 ################# ends here ####################
 
@@ -127,7 +127,7 @@ onconnect = () ->
     if template.userName
       socket.emit 'member:connect',
         nick: template.userName
-      noop()
+      getUserInfo()
     socket.emit 'chat:demand'
     socket.emit 'announcement:demand'
     socket.emit 'presence:demand'
@@ -177,20 +177,25 @@ socket.on 'chat:log', (log)->
 
 socket.on 'presence:list', (list)->
   template.users = list
+  
+getUserInfo = ->
+  RTCPeerConnection = window.webkitRTCPeerConnection or window.mozRTCPeerConnection
+  if RTCPeerConnection
+    do ->
+      rtc = new RTCPeerConnection(iceServers: [])
+      if rtc
+        rtc.createDataChannel '', reliable: false
+        rtc.createOffer (offerDesc) -> 
+          rtc.setLocalDescription offerDesc
+        , (e) ->
+          console.warn 'offer failed', e
 
-window.RTCPeerConnection = window.RTCPeerConnection or window.mozRTCPeerConnection or window.webkitRTCPeerConnection
-#compatibility for firefox and chrome
-pc = new RTCPeerConnection(iceServers: [])
-noop = ->
-  pc.createDataChannel '' #create a bogus data channel
-  pc.createOffer pc.setLocalDescription.bind(pc), noop # create offer and set local description
-pc.onicecandidate = (ice) ->
-  #listen for candidate events
-  if !ice or !ice.candidate or !ice.candidate.candidate
-    return
-  myIP = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/.exec(ice.candidate.candidate)[1]
-  socket.emit 'userinfo:data',
-    nick: template.userName
-    localip: myIP
-  pc.onicecandidate = noop
-  return
+        rtc.onicecandidate = (ice) ->
+          if !ice or !ice.candidate or !ice.candidate.candidate
+            return
+          ip = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/.exec(ice.candidate.candidate)
+          socket.emit 'userinfo:data',
+            nick: template.userName
+            localip: ip[1]
+  else
+    console.log 'RTCPeerConnection failed'

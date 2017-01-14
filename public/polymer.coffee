@@ -41,6 +41,8 @@ $('.getinput').keydown (event) ->
 
 ################# ends here ####################
 
+notificationTitle = ""
+
 window.addEventListener 'polymer-ready', (e) ->
   polymerLoaded = true
 

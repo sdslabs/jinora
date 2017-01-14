@@ -23,6 +23,10 @@ if !process.env.ORGANIZATION_NAME
   console.error "ERROR: Please provide an ORGANIZATION_NAME environment variable."
   process.exit 1
 
+if !process.env.ORGANIZATION_NAME
+  console.error "Please provide an ORGANIZATION_NAME environment variable."
+  process.exit 1
+
 # This is a circular buffer of messages, which are stored in memory
 messages = new CBuffer(parseInt(process.env.BUFFER_SIZE))
 onlineMemberList = []

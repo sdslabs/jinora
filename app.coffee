@@ -46,6 +46,7 @@ interpretCommand = (commandText, adminNick) ->
   clearCommands = ["clean", "clear"]
   userInfoCommands = ["info", "connectnotify"]
   firstWord = commandText.split(' ')[0]
+  secondWord = commandText.split(' ')[1]
   if (firstWord in userVerifierCommands)
     if(userVerifier)
       userVerifier.interpret commandText, adminNick
@@ -55,7 +56,7 @@ interpretCommand = (commandText, adminNick) ->
   else if (firstWord in announcementCommands)
     announcementHandler.interpret commandText, adminNick
   else if (firstWord in userInfoCommands)
-    if firstWord == "connectnotify" 
+    if firstWord == "connectnotify"
       command = commandText.substr(commandText.indexOf(' ') + 1)
       if command is 'on' or command is 'off'
         setConnectNotify command
@@ -65,12 +66,16 @@ interpretCommand = (commandText, adminNick) ->
         text += "_Sample commands:_\n"
         text += "\t`!connectnotify on` for turning on user connect notifications.\n"
         text += "\t`!connectnotify off` for turning off user connect notifications.\n"
-      slack.postMessage text, process.env.SLACK_CHANNEL, 'Jinora' 
+      slack.postMessage text, process.env.SLACK_CHANNEL, 'Jinora'
     else
       userInfoHandler.interpret commandText
 
   else if (firstWord in clearCommands)
-    messages = new CBuffer(parseInt(process.env.BUFFER_SIZE))
+    if (!secondWord || isNaN(secondWord))
+      messages = new CBuffer(parseInt(process.env.BUFFER_SIZE))
+    else
+      for i in [0..parseInt(secondWord)]
+        messages.pop()
   else if firstWord is "help"
     announcementHandler.showHelp()
 

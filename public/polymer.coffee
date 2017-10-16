@@ -1,5 +1,7 @@
 template = document.querySelector('#template')
 
+converter = new showdown.Converter()
+
 polymerLoaded = false
 
 template.announcement = ""
@@ -62,8 +64,11 @@ sendMessage = (msg)->
     nick: template.userName
     avatar: template.avatar
 
+formatMessage = (msg)->
+  converter.makeHtml msg.replace urlRegex, '<a href="$1" target="_blank">$1</a>'
+
 showMessage = (msg)->
-  msg.message = msg.message.replace urlRegex, '<a href="$1" target="_blank">$1</a>'
+  msg.message = formatMessage msg.message
   template.messages.push msg
   template.async ()->
     chatDiv = document.querySelector('.chat-list')

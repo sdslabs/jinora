@@ -18,6 +18,7 @@ notificationTitle = ""
 
 pendingNotifications = 0
 
+urlRegex = /((http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])?)/g
 
 ################## login screen #################
 
@@ -62,6 +63,7 @@ sendMessage = (msg)->
     avatar: template.avatar
 
 showMessage = (msg)->
+  msg.message = msg.message.replace urlRegex, '<a href="$1" target="_blank">$1</a>'
   template.messages.push msg
   template.async ()->
     chatDiv = document.querySelector('.chat-list')

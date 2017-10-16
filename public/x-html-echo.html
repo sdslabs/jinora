@@ -1,0 +1,9 @@
+<polymer-element name="x-html-echo" attributes="html">
+	<script>
+		Polymer('x-html-echo', {
+			htmlChanged: function() {
+				this.innerHTML = this.html;
+			}
+		});
+	</script>
+</polymer-element>

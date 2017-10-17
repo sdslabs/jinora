@@ -1,6 +1,6 @@
 template = document.querySelector('#template')
 
-converter = new showdown.Converter()
+converter = new showdown.Converter({extensions: ['htmlescape']})
 
 polymerLoaded = false
 

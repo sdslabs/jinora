@@ -1,6 +1,10 @@
 template = document.querySelector('#template')
 
-converter = new showdown.Converter({extensions: ['htmlescape']})
+converter = new showdown.Converter 
+  extensions: ['htmlescape']
+  simplifiedAutoLink: true
+  openLinksInNewWindow: true
+  strikethrough: true
 
 polymerLoaded = false
 
@@ -19,8 +23,6 @@ baseTitle = ""
 notificationTitle = ""
 
 pendingNotifications = 0
-
-urlRegex = /((http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])?)/g
 
 ################## login screen #################
 
@@ -65,7 +67,7 @@ sendMessage = (msg)->
     avatar: template.avatar
 
 formatMessage = (msg)->
-  converter.makeHtml msg.replace urlRegex, '<a href="$1" target="_blank">$1</a>'
+  converter.makeHtml msg
 
 showMessage = (msg)->
   msg.message = formatMessage msg.message

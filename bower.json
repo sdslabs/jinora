@@ -14,7 +14,6 @@
     "paper-fab": "Polymer/paper-fab#~0.5.5",
     "time-elements": "~0.4.0",
     "showdown": "^1.7.6",
-    "showdown-htmlescape": "^0.1.9",
-    "xss-filters": "^1.2.7"
+    "showdown-htmlescape": "^0.1.9"
   }
 }

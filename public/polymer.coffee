@@ -1,11 +1,5 @@
 template = document.querySelector('#template')
 
-converter = new showdown.Converter 
-  extensions: ['htmlescape']
-  simplifiedAutoLink: true
-  openLinksInNewWindow: true
-  strikethrough: true
-
 polymerLoaded = false
 
 template.announcement = ""
@@ -66,11 +60,7 @@ sendMessage = (msg)->
     nick: template.userName
     avatar: template.avatar
 
-formatMessage = (msg)->
-  converter.makeHtml msg
-
 showMessage = (msg)->
-  msg.message = formatMessage msg.message
   template.messages.push msg
   template.async ()->
     chatDiv = document.querySelector('.chat-list')

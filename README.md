@@ -27,7 +27,7 @@ Configuration Options:
 - **OUTGOING_TOKEN** Service Token from Slack's outgoing webhook
 - **INCOMING_HOOK_URL** URL from Slack's incoming webhook
 - **SESSION_SECRET** Session secret key (currently useless)
-- **API_TOKEN** API Token for the slack team. Generated at <https://api.slack.com/web> (scroll to bottom). Bot users tokens may work, but have not been tested.
+- **API_TOKEN** API Token for the slack team. Generated at <https://api.slack.com/custom-integrations/legacy-tokens> (scroll to bottom). Bot users tokens may work, but have not been tested.
 - **BUFFER_SIZE** Number of messages to keep in memory. This is automatically rotated and lost on reboots. Recommended value is 500-1000
 - **SLACK_CHANNEL** Name of slack channel to send messages to. Default is "public".
 - **BANNED_CHANNEL** Name of slack channel to send messages from banned users. Default is "public-hell".

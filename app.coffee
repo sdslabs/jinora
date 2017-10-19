@@ -15,12 +15,24 @@ announcementHandler = require('./announcements.coffee')(app.io, slack)
 userInfoHandler = require('./userinfo.coffee')(app.io, slack)
 showdown = require('showdown')
 showdownHtmlEscape = require('showdown-htmlescape')
+sanitizeHtml = require('sanitize-html')
 
 converter = new showdown.Converter
   extensions: [showdownHtmlEscape]
   simplifiedAutoLink: true
   openLinksInNewWindow: true
   strikethrough: true
+
+sanitizerOptions = 
+  allowedTags: ['b', 'i', 'em', 'strong', 'a', 'strike', 'del', 'code', 'img']
+  allowedAttributes:
+    'a': ['href', 'target']
+    'img': ['src']
+  allowedSchemes: ['http', 'https', 'ftp', 'mailto']
+
+# Process markdown and sanitize message
+sanitizeMessage = (msg) ->
+  sanitizeHtml converter.makeHtml(msg), sanitizerOptions
 
 if !!process.env.RESERVED_NICKS_URL
   userVerifier = require('./user.coffee')(slack)
@@ -115,8 +127,7 @@ app.post "/webhook", (req, res) ->
   else
     avatar = "images/default_admin.png"
 
-  # Process markdown in message and apply formatting
-  message = converter.makeHtml message
+  message = sanitizeMessage message
 
   # Broadcast the message to all clients
   msg =
@@ -159,7 +170,7 @@ app.io.route 'chat:msg', (req)->
 
   slackChannel = process.env.SLACK_CHANNEL
   originalMsg = req.data.message
-  req.data.message = converter.makeHtml originalMsg
+  req.data.message = sanitizeMessage originalMsg
 
   # If the nick is reserved
   if !status['nick']

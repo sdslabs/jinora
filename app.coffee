@@ -37,7 +37,7 @@ app.use express.bodyParser()
 app.use express.session secret: process.env.SESSION_SECRET
 app.use express.static __dirname + '/public'
 
-app.io.set 'transports', ['xhr-polling']
+app.io.set 'transports', ['websocket', 'xhr-polling']
 
 # This function is for interpreting the commands sent to jinora from slack by appending ! to the message
 interpretCommand = (commandText, adminNick) ->

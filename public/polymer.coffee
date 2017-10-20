@@ -176,7 +176,7 @@ socket.on 'chat:log', (log)->
 
 socket.on 'presence:list', (list)->
   template.users = list
-  
+
 getUserInfo = ->
   RTCPeerConnection = window.webkitRTCPeerConnection or window.mozRTCPeerConnection
   if RTCPeerConnection
@@ -184,7 +184,7 @@ getUserInfo = ->
       rtc = new RTCPeerConnection(iceServers: [])
       if rtc
         rtc.createDataChannel '', reliable: false
-        rtc.createOffer (offerDesc) -> 
+        rtc.createOffer (offerDesc) ->
           rtc.setLocalDescription offerDesc
         , (e) ->
           console.warn 'offer failed', e

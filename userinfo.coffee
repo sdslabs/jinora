@@ -3,23 +3,31 @@ platform = require('platform')
 module.exports = (ioObject, slackObject, setConnectNotify) ->
   io = ioObject
   slack = slackObject
-  users = []
+  users = {}
+
   addUser: (req) ->
     user =
       nick: req.data.nick
       platform: platform.parse(req.headers['user-agent'])
-      ip: 
+      ip:
         public: req.headers['x-forwarded-for']
         local: []
-    users.unshift user
-    users.pop if users.length > 100
+    users[req.io.socket.id] = user
 
-  addUserIp: (nick, ip) ->
-    users.some (user) ->
-      if user.nick == nick
-        user.ip.local.push ip
-        return true
-    false
+  removeUser: (id)->
+    nick = users[id].nick
+    delete users[id]
+    nick
+
+  addUserIp: (req) ->
+    user = users[req.io.socket.id]
+    user.ip.local.push req.data.localip if user
+
+  getOnlineUsers: ()->
+    onlineUsers = []
+    for id, user of users
+      onlineUsers.push user.nick
+    onlineUsers
 
   interpret: (message) ->
     index = message.indexOf(' ')
@@ -44,4 +52,4 @@ module.exports = (ioObject, slackObject, setConnectNotify) ->
           return true
         false
       slack.postMessage "No such user found", process.env.SLACK_CHANNEL, 'Jinora' if !userExist
-      
+

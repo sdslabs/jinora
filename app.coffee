@@ -76,6 +76,9 @@ interpretCommand = (commandText, adminNick) ->
     else
       for i in [0..parseInt(secondWord)]
         messages.pop()
+  else if firstWord is "users"
+    msg = userInfoHandler.getOnlineUsers().join ', '
+    slack.postMessage msg, process.env.SLACK_CHANNEL, 'Jinora'
   else if firstWord is "help"
     announcementHandler.showHelp()
 
@@ -190,17 +193,19 @@ app.io.route 'chat:demand', (req)->
 app.io.route 'member:connect', (req)->
   userInfoHandler.addUser req
   if connectNotify == "on"
-    slack.postMessage req.data.nick + " entered channel", process.env.SLACK_CHANNEL, "Jinora"
-
-app.io.route 'member:disconnect', (req)->
-  if connectNotify == "on"
-    slack.postMessage req.data.nick + " left channel", process.env.SLACK_CHANNEL, "Jinora"
+    slack.postMessage "#{req.data.nick} entered channel", process.env.SLACK_CHANNEL, "Jinora"
 
 app.io.route 'presence:demand', (req)->
   req.io.emit 'presence:list', onlineMemberList
 
 app.io.route 'userinfo:data', (req)->
-  userInfoHandler.addUserIp req.data.nick, req.data.localip
+  userInfoHandler.addUserIp req
+
+app.io.on 'connection', (socket)->
+  socket.on 'disconnect', ()->
+    nick = userInfoHandler.removeUser socket.id
+    if connectNotify == "on"
+      slack.postMessage "#{nick} left channel", process.env.SLACK_CHANNEL, "Jinora"
 
 presence.on 'change', ()->
   onlineMemberList = []

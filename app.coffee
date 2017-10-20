@@ -24,10 +24,9 @@ converter = new showdown.Converter
   strikethrough: true
 
 sanitizerOptions = 
-  allowedTags: ['b', 'i', 'em', 'strong', 'a', 'strike', 'del', 'code', 'img']
+  allowedTags: ['b', 'i', 'em', 'strong', 'a', 'strike', 'del', 'code']
   allowedAttributes:
     'a': ['href', 'target']
-    'img': ['src']
   allowedSchemes: ['http', 'https', 'ftp', 'mailto']
 
 # Process markdown and sanitize message

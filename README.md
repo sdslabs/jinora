@@ -1,4 +1,4 @@
-#jinora
+# jinora
 
 jinora is a simple slack-backed chat application that proxies messages to and fro between slack and an anonymous chat platform. It allows your team to maintain a `#public` channel where anonymous users can come and talk to your entire team. You can then direct users wanting support, for example, to your jinora instance where you can help them resolve the issue over chat. 
 
@@ -10,7 +10,7 @@ No more need to having your team monitor IRC or Olark, it can all be done in Sla
 
 #[LIVE DEMO](http://chat.sdslabs.co)
 
-##Features
+## Features
 
 1. Make a truly public channel in Slack (no need of a paid plan)
 2. Emoji support
@@ -20,7 +20,7 @@ No more need to having your team monitor IRC or Olark, it can all be done in Sla
 6. Supports shadow-banning of users. Also nicks can be reserved by adding them to your [jsonblob](https://jsonblob.com).
 7. Announcements can be made by team members which are visible to all clients.
 
-##Setup Instructions
+## Setup Instructions
 
 Configuration Options:
 
@@ -36,7 +36,7 @@ Configuration Options:
 
 These configuration options can either be provided via a `.env` file in development, or via Heroku config variables, if you are deploying to Heroku. A sample env file is provided in `.env.sample`.
 
-###Slack-side configuration
+### Slack-side configuration
 1. Create a `#public` channel (could be called anything).
 2. Create an outgoing webhook that listens only on `#public`.
 3. Create an incoming webhook, and note down its URL.
@@ -50,7 +50,7 @@ Screenshots for a better understanding (outgoing and then incoming):
 
 ![JsonBlob Sample](http://i.imgur.com/Cpo3M2i.png)
 
-##Architecture
+## Architecture
 
            +--------------+        
            |    #public   |        
@@ -91,7 +91,7 @@ Announcements can be made by typing `!announce some_announcement` in your public
 
 Remember that messages prefixed with `!` are commands interpreted by jinora, and these messages are not sent to clients. You can see a list of all jinora commands by entering `!help` in the public channel.
 
-#Upgrading
+# Upgrading
 
 Make sure you upgrade to 2.0.1 atleast. To upgrade from 1.x to 2.x, follow these steps:
 
@@ -106,10 +106,10 @@ BASE_URL=https://jinora.herokuapp.com #Replace this with your base url
 3. Push the update.
 4. You can remove the old `INCOMING_TOKEN` config.
 
-##Licence
+## Licence
 Jinora is licenced under the [MIT Licence](http://nemo.mit-license.org/).
 
-##Credits
+## Credits
 Artwork by [peachei.deviantart.com](http://peachei.deviantart.com/art/Older-Jinora-317463839)
 
 The polymer source is based on [paper-chat](https://github.com/pubnub/paper-chat) by pubnub.

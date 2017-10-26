@@ -134,7 +134,7 @@ app.post "/webhook", (req, res) ->
     nick: adminNick,
     admin: 1,
     online: 1,
-    timestamp: (new Date).getTime(),
+    timestamp: (new Date).toISOString(),
     avatar: avatar,
     avatar192: avatar192
 
@@ -160,7 +160,7 @@ app.io.route 'chat:msg', (req)->
   delete req.data.invalidNick
   req.data.admin = 0    # Indicates that the message is not sent by a team member
   req.data.online = 0   # Online status of end user is not tracked, always set to 0
-  req.data.timestamp = (new Date).getTime()   # Current Time
+  req.data.timestamp = (new Date).toISOString()   # Current Time
   if !req.data.avatar
     req.data.avatar = process.env.BASE_URL + "/images/default_user.png"
   # If RESERVED_NICKS_URL doesn't exist => userVerifier = ""

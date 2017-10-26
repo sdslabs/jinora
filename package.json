@@ -39,6 +39,6 @@
     "slack-utils": "^0.3.0"
   },
   "engines": {
-    "node": "0.10.x"
+    "node": "4.8.5"
   }
 }

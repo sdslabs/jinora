@@ -13,6 +13,25 @@ rate_limit = require('./rate_limit.coffee')
 app = express().http().io()
 announcementHandler = require('./announcements.coffee')(app.io, slack)
 userInfoHandler = require('./userinfo.coffee')(app.io, slack)
+showdown = require('showdown')
+showdownHtmlEscape = require('showdown-htmlescape')
+sanitizeHtml = require('sanitize-html')
+
+converter = new showdown.Converter
+  extensions: [showdownHtmlEscape]
+  simplifiedAutoLink: true
+  openLinksInNewWindow: true
+  strikethrough: true
+
+sanitizerOptions = 
+  allowedTags: ['b', 'i', 'em', 'strong', 'a', 'strike', 'del', 'code']
+  allowedAttributes:
+    'a': ['href', 'target']
+  allowedSchemes: ['http', 'https', 'ftp', 'mailto']
+
+# Process markdown and sanitize message
+sanitizeMessage = (msg) ->
+  sanitizeHtml converter.makeHtml(msg), sanitizerOptions
 
 if !!process.env.RESERVED_NICKS_URL
   userVerifier = require('./user.coffee')(slack)
@@ -107,6 +126,8 @@ app.post "/webhook", (req, res) ->
   else
     avatar = "images/default_admin.png"
 
+  message = sanitizeMessage message
+
   # Broadcast the message to all clients
   msg =
     message: message,
@@ -147,6 +168,8 @@ app.io.route 'chat:msg', (req)->
   storeMsg = true
 
   slackChannel = process.env.SLACK_CHANNEL
+  originalMsg = req.data.message
+  req.data.message = sanitizeMessage originalMsg
 
   # If the nick is reserved
   if !status['nick']
@@ -173,9 +196,9 @@ app.io.route 'chat:msg', (req)->
   # If we were given a valid avatar
   if req.data.avatar
     icon = req.data.avatar
-    slack.postMessage req.data.message, slackChannel, req.data.nick, icon
+    slack.postMessage originalMsg, slackChannel, req.data.nick, icon
   else
-    slack.postMessage req.data.message, slackChannel, req.data.nick
+    slack.postMessage originalMsg, slackChannel, req.data.nick
 
   # Store message in memory
   if storeMsg

@@ -43,7 +43,8 @@ module.exports = (ioObject, slackObject, setConnectNotify) ->
       if nick == ''
         slack.postMessage "No nick supplied", process.env.SLACK_CHANNEL, 'Jinora'
         return
-      userExist = users.some (user) ->
+      userExist = Object.keys(users).some (id) ->
+        user = users[id]
         if user.nick == nick
           text = "Info for #{nick}:\n"
           text += "\t*platform:* #{user.platform}\n"

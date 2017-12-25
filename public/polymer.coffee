@@ -140,8 +140,6 @@ socket.on 'connect', onconnect
 
 socket.on 'disconnect', ->
   template.status = 'disconnected'
-  socket.emit 'member:disconnect',
-    nick: template.userName
 
 socket.on 'reconnect', ->
   template.status = 'connected'

@@ -22,6 +22,7 @@ module.exports = (ioObject, slackObject) ->
   \t!info <nick> _to get user info._
   \t!clear _to remove all the latest messages from the public view._
   \t!clear [x] _to remove only the last x messages from public view._
+  \t!users _to show a list of online users._
   \t!help _to show this message._
   """
 

@@ -15,9 +15,10 @@ module.exports = (ioObject, slackObject, setConnectNotify) ->
     users[req.io.socket.id] = user
 
   removeUser: (id)->
-    nick = users[id].nick
-    delete users[id]
-    nick
+    if !!users[id]
+      nick = users[id].nick
+      delete users[id]
+      nick
 
   addUserIp: (req) ->
     user = users[req.io.socket.id]

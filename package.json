@@ -36,7 +36,7 @@
     "sanitize-html": "^1.14.1",
     "showdown": "^1.7.6",
     "showdown-htmlescape": "^0.1.9",
-    "slack-utils": "^0.3.0"
+    "slack-utils": "^0.3.2"
   },
   "engines": {
     "node": "4.8.5"

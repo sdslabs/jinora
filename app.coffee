@@ -93,7 +93,7 @@ interpretCommand = (commandText, adminNick) ->
     if (!secondWord || isNaN(secondWord))
       messages = new CBuffer(parseInt(process.env.BUFFER_SIZE))
     else
-      for i in [0..parseInt(secondWord)]
+      for i in [1..parseInt(secondWord)]
         messages.pop()
   else if firstWord is "users"
     msg = userInfoHandler.getOnlineUsers().join ', '

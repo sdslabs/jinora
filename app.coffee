@@ -7,7 +7,8 @@ express = require('express.io')
 fs = require('fs')
 path = require('path')
 CBuffer = require('CBuffer');
-slack = require('slack-utils/api')(process.env.API_TOKEN, process.env.INCOMING_HOOK_URL)
+# slack = require('slack-utils/api')(process.env.API_TOKEN, process.env.INCOMING_HOOK_URL)
+slack = require('slack')
 presence = require('./presence.coffee')
 rate_limit = require('./rate_limit.coffee')
 app = express().http().io()
@@ -71,7 +72,8 @@ interpretCommand = (commandText, adminNick) ->
       userVerifier.interpret commandText, adminNick
     else
       errorText = "Banning feature is not configured. Add RESERVED_NICKS_URL to .env file."
-      slack.postMessage errorText, process.env.SLACK_CHANNEL, "Jinora"
+      # slack.postMessage errorText, process.env.SLACK_CHANNEL, "Jinora"
+      slack.chat.postMessage process.env.API_TOKEN, process.env.SLACK_CHANNEL, errorText, "Jinora"
   else if (firstWord in announcementCommands)
     announcementHandler.interpret commandText, adminNick
   else if (firstWord in userInfoCommands)
@@ -85,7 +87,8 @@ interpretCommand = (commandText, adminNick) ->
         text += "_Sample commands:_\n"
         text += "\t`!connectnotify on` for turning on user connect notifications.\n"
         text += "\t`!connectnotify off` for turning off user connect notifications.\n"
-      slack.postMessage text, process.env.SLACK_CHANNEL, 'Jinora'
+      # slack.postMessage text, process.env.SLACK_CHANNEL, 'Jinora'
+      slack.chat.postMessage process.env.API_TOKEN, process.env.SLACK_CHANNEL, text, 'Jinora'
     else
       userInfoHandler.interpret commandText
 
@@ -97,7 +100,8 @@ interpretCommand = (commandText, adminNick) ->
         messages.pop()
   else if firstWord is "users"
     msg = userInfoHandler.getOnlineUsers().join ', '
-    slack.postMessage msg, process.env.SLACK_CHANNEL, 'Jinora'
+    # slack.postMessage msg, process.env.SLACK_CHANNEL, 'Jinora'
+    slack.chat.postMessage process.env.API_TOKEN, process.env.SLACK_CHANNEL, msg, 'Jinora'
   else if firstWord is "help"
     announcementHandler.showHelp()
 
@@ -109,7 +113,7 @@ app.post "/webhook", (req, res) ->
   # Prevents us from falling into a loop
   return res.json {} if req.body.user_id == 'USLACKBOT'
 
-  message = slack.parseMessage(req.body.text)
+  message = slack.parseMessage(req.body.text) #Will try and find the equivalent api call
   adminNick = req.body.user_name
 
   # If the message is not meant to be sent to jinora users, but it is a command meant to be interpreted by jinora
@@ -120,8 +124,10 @@ app.post "/webhook", (req, res) ->
     res.send ""
     return
 
-  if slack.userInfoById(req.body.user_id)
-    profile = slack.userInfoById(req.body.user_id)['profile']
+  # if slack.userInfoById(req.body.user_id)
+  if slack.users.info(process.env.API_TOKEN, req.body.user_id)
+    # profile = slack.userInfoById(req.body.user_id)['profile']
+    profile = slack.users.info(process.env.API_TOKEN, req.body.user_id)['profile']
     avatar = profile['image_72']
     avatar192 = profile['image_192']
     if process.env.ADMIN_NICK == "full"
@@ -199,9 +205,11 @@ app.io.route 'chat:msg', (req)->
   # If we were given a valid avatar
   if req.data.avatar
     icon = req.data.avatar
-    slack.postMessage originalMsg, slackChannel, req.data.nick, icon
+    # slack.postMessage originalMsg, slackChannel, req.data.nick, icon
+    slack.chat.postmessage process.env.API_TOKEN, slackChannel, originalMsg, icon, req.data.nick
   else
-    slack.postMessage originalMsg, slackChannel, req.data.nick
+    # slack.postMessage originalMsg, slackChannel, req.data.nick
+    slack.chat.postMessage process.env.API_TOKEN, slackChannel, originalMsg, req.data.nick
 
   # Store message in memory
   if storeMsg
@@ -216,7 +224,8 @@ app.io.route 'chat:demand', (req)->
 app.io.route 'member:connect', (req)->
   userInfoHandler.addUser req
   if connectNotify == "on"
-    slack.postMessage "#{req.data.nick} entered channel", process.env.SLACK_CHANNEL, "Jinora"
+    # slack.postMessage "#{req.data.nick} entered channel", process.env.SLACK_CHANNEL, "Jinora"
+    slack.chat.post.postMessage process.env.API_TOKEN, process.env.SLACK_CHANNEL, "#{req.data.nick} entered channel", "Jinora"
 
 app.io.route 'presence:demand', (req)->
   req.io.emit 'presence:list', onlineMemberList
@@ -228,12 +237,13 @@ app.io.on 'connection', (socket)->
   socket.on 'disconnect', ()->
     nick = userInfoHandler.removeUser socket.id
     if connectNotify == "on"
-      slack.postMessage "#{nick} left channel", process.env.SLACK_CHANNEL, "Jinora"
+      # slack.postMessage "#{nick} left channel", process.env.SLACK_CHANNEL, "Jinora"
+      slack.chat.postMessage process.env.API_TOKEN, process.env.SLACK_CHANNEL, "#{nick} left channel", "Jinora"
 
 presence.on 'change', ()->
   onlineMemberList = []
   for username in presence.online()
-    userInfo = slack.userInfoByName(username)
+    userInfo = slack.userInfoByName(username) #Will try to find an equivalent to this
     if userInfo
       if !!userInfo.is_bot    # Continue for loop in case is_bot is true. '!!'' take care of case when is_bot is undefined
         continue

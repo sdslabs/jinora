@@ -30,26 +30,10 @@
         "tweetnacl": "^0.14.3"
       }
     },
-    "bindings": {
-      "version": "1.2.1",
-      "resolved": "https://registry.npmjs.org/bindings/-/bindings-1.2.1.tgz",
-      "integrity": "sha1-FK1hE4EtLTfXLme0ystLtyZQXxE=",
-      "optional": true
-    },
     "bower": {
       "version": "1.8.2",
       "resolved": "https://registry.npmjs.org/bower/-/bower-1.8.2.tgz",
       "integrity": "sha1-rfU1KcjUrwLvJPuNU0HBQZ0z4vc="
-    },
-    "bufferutil": {
-      "version": "1.1.0",
-      "resolved": "https://registry.npmjs.org/bufferutil/-/bufferutil-1.1.0.tgz",
-      "integrity": "sha1-P5a+d6f4ZS/2nvKfHKvIuJ9/2XI=",
-      "optional": true,
-      "requires": {
-        "bindings": "1.2.x",
-        "nan": "1.8.x"
-      }
     },
     "coffee-script": {
       "version": "1.12.7",
@@ -66,8 +50,7 @@
     },
     "debug": {
       "version": "0.8.1",
-      "resolved": "https://registry.npmjs.org/debug/-/debug-0.8.1.tgz",
-      "integrity": "sha1-IP9NJvXkIstoobrLu2EDmtjBwTA="
+      "resolved": ""
     },
     "dotenv": {
       "version": "0.4.0",
@@ -442,12 +425,6 @@
       "version": "4.6.2",
       "resolved": "https://registry.npmjs.org/lodash.mergewith/-/lodash.mergewith-4.6.2.tgz",
       "integrity": "sha512-GK3g5RPZWTRSeLSpgP8Xhra+pnjBC56q9FZYe1d5RN3TJ35dbkGy3YqBSMbyCrlbi+CM9Z3Jk5yTL7RCsqboyQ=="
-    },
-    "nan": {
-      "version": "1.8.4",
-      "resolved": "https://registry.npmjs.org/nan/-/nan-1.8.4.tgz",
-      "integrity": "sha1-PHa1OC6rM+RLdY0oE8qdkuk0LzQ=",
-      "optional": true
     },
     "platform": {
       "version": "1.3.4",
@@ -1441,40 +1418,6 @@
         "tiny-json-http": "^7.0.2"
       }
     },
-    "slack-utils": {
-      "version": "0.3.2",
-      "resolved": "https://registry.npmjs.org/slack-utils/-/slack-utils-0.3.2.tgz",
-      "integrity": "sha512-lgbjGxg11PTNq6n3fyY8276Y/Vn6uf1PQJAyNGbtv1cZDtdvQ89myis0RK572etV97B9nGN4jASJcJJGqDzlig==",
-      "requires": {
-        "request": "^2.53.0",
-        "ws": "^0.7.1"
-      },
-      "dependencies": {
-        "ws": {
-          "version": "0.7.2",
-          "resolved": "https://registry.npmjs.org/ws/-/ws-0.7.2.tgz",
-          "integrity": "sha1-Q4xWC9+it9o91ba0btYTJcJGmdg=",
-          "requires": {
-            "bufferutil": "1.1.x",
-            "options": ">=0.0.5",
-            "ultron": "1.0.x",
-            "utf-8-validate": "1.1.x"
-          },
-          "dependencies": {
-            "options": {
-              "version": "0.0.6",
-              "resolved": "https://registry.npmjs.org/options/-/options-0.0.6.tgz",
-              "integrity": "sha1-7CLTEoBrtT5zF3Pnza788cZDEo8="
-            },
-            "ultron": {
-              "version": "1.0.2",
-              "resolved": "https://registry.npmjs.org/ultron/-/ultron-1.0.2.tgz",
-              "integrity": "sha1-rOEWq1V80Zc4ak6I9GhTeMiy5Po="
-            }
-          }
-        }
-      }
-    },
     "sshpk": {
       "version": "1.16.1",
       "resolved": "https://registry.npmjs.org/sshpk/-/sshpk-1.16.1.tgz",
@@ -1505,16 +1448,6 @@
       "version": "0.14.5",
       "resolved": "https://registry.npmjs.org/tweetnacl/-/tweetnacl-0.14.5.tgz",
       "integrity": "sha1-WuaBd/GS1EViadEIr6k/+HQ/T2Q="
-    },
-    "utf-8-validate": {
-      "version": "1.1.0",
-      "resolved": "https://registry.npmjs.org/utf-8-validate/-/utf-8-validate-1.1.0.tgz",
-      "integrity": "sha1-UhprshidCzB93Ft5w8laX9gIXbQ=",
-      "optional": true,
-      "requires": {
-        "bindings": "1.2.x",
-        "nan": "1.8.x"
-      }
     }
   }
 }

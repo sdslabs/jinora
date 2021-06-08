@@ -28,7 +28,7 @@ $('.getinput').keydown (event) ->
     if name == '' or name == null
       name = defaultNames[Math.floor(Math.random() * defaultNames.length)]
     template.userName = name
-    template.avatar = "https://api.adorable.io/avatars/80/" + escape(template.userName) + ".png"
+    template.avatar = "https://raw.githubusercontent.com/Ashwinvalento/cartoon-avatar/master/lib/images/male/" +  (name.charCodeAt(0) % 100 + 1) + ".png"
     $('.loginscreen h1').append ' ' + name
     $('.loginscreen').addClass('form-success').delay 1200
     $('.loginscreen').fadeOut()

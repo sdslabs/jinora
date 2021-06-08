@@ -4,15 +4,17 @@ if process.env.NODE_ENV != 'production'
   dotenv.load()
 
 express = require('express.io')
+session = require('express-session')
 fs = require('fs')
 path = require('path')
 CBuffer = require('CBuffer');
-slack = require('slack-utils/api')(process.env.API_TOKEN, process.env.INCOMING_HOOK_URL)
-presence = require('./presence.coffee')
+slack = require('slack')
+slack_utils = require('./slack-utils')(process.env.API_TOKEN, process.env.INCOMING_HOOK_URL)
+presence = require('./presence.coffee')(process.env.API_TOKEN)
 rate_limit = require('./rate_limit.coffee')
 app = express().http().io()
-announcementHandler = require('./announcements.coffee')(app.io, slack)
-userInfoHandler = require('./userinfo.coffee')(app.io, slack)
+announcementHandler = require('./announcements.coffee')(app.io, slack_utils)
+userInfoHandler = require('./userinfo.coffee')(app.io, slack_utils)
 showdown = require('showdown')
 showdownHtmlEscape = require('showdown-htmlescape')
 sanitizeHtml = require('sanitize-html')
@@ -23,7 +25,7 @@ converter = new showdown.Converter
   openLinksInNewWindow: true
   strikethrough: true
 
-sanitizerOptions = 
+sanitizerOptions =
   allowedTags: ['b', 'i', 'em', 'strong', 'a', 'strike', 'del', 'code']
   allowedAttributes:
     'a': ['href', 'target']
@@ -34,7 +36,7 @@ sanitizeMessage = (msg) ->
   sanitizeHtml converter.makeHtml(msg), sanitizerOptions
 
 if !!process.env.RESERVED_NICKS_URL
-  userVerifier = require('./user.coffee')(slack)
+  userVerifier = require('./user.coffee')(slack_utils)
 else
   console.error "WARNING: banning won't work as RESERVED_NICKS_URL is not provided"
 
@@ -53,7 +55,20 @@ setConnectNotify = (val) ->
 # Setup your sessions, just like normal.
 app.use express.cookieParser()
 app.use express.bodyParser()
-app.use express.session secret: process.env.SESSION_SECRET
+
+app.set('trust proxy', 1);
+
+sessionConfig =
+  secret: process.env.SESSION_SECRET
+  key: 'connect.sid'
+  cookie:
+    proxy: process.env.NODE_ENV == 'production',
+    sameSite: "none"
+    secure: process.env.NODE_ENV == 'production'
+    resave: true
+
+
+app.use session sessionConfig
 app.use express.static __dirname + '/public'
 
 app.io.set 'transports', ['websocket', 'xhr-polling']
@@ -71,7 +86,7 @@ interpretCommand = (commandText, adminNick) ->
       userVerifier.interpret commandText, adminNick
     else
       errorText = "Banning feature is not configured. Add RESERVED_NICKS_URL to .env file."
-      slack.postMessage errorText, process.env.SLACK_CHANNEL, "Jinora"
+      slack_utils.postMessage errorText, process.env.SLACK_CHANNEL, "Jinora"
   else if (firstWord in announcementCommands)
     announcementHandler.interpret commandText, adminNick
   else if (firstWord in userInfoCommands)
@@ -85,7 +100,7 @@ interpretCommand = (commandText, adminNick) ->
         text += "_Sample commands:_\n"
         text += "\t`!connectnotify on` for turning on user connect notifications.\n"
         text += "\t`!connectnotify off` for turning off user connect notifications.\n"
-      slack.postMessage text, process.env.SLACK_CHANNEL, 'Jinora'
+      slack_utils.postMessage text, process.env.SLACK_CHANNEL, 'Jinora'
     else
       userInfoHandler.interpret commandText
 
@@ -93,11 +108,11 @@ interpretCommand = (commandText, adminNick) ->
     if (!secondWord || isNaN(secondWord))
       messages = new CBuffer(parseInt(process.env.BUFFER_SIZE))
     else
-      for i in [1..parseInt(secondWord)]
+      for i in [0..parseInt(secondWord)]
         messages.pop()
   else if firstWord is "users"
     msg = userInfoHandler.getOnlineUsers().join ', '
-    slack.postMessage msg, process.env.SLACK_CHANNEL, 'Jinora'
+    slack_utils.postMessage msg, process.env.SLACK_CHANNEL, 'Jinora'
   else if firstWord is "help"
     announcementHandler.showHelp()
 
@@ -109,23 +124,23 @@ app.post "/webhook", (req, res) ->
   # Prevents us from falling into a loop
   return res.json {} if req.body.user_id == 'USLACKBOT'
 
-  message = slack.parseMessage(req.body.text)
+  message = slack_utils.parseMessage(req.body.text)
   adminNick = req.body.user_name
 
   # If the message is not meant to be sent to jinora users, but it is a command meant to be interpreted by jinora
   isCommand = (req.body.text[0] == "!")
   if isCommand
     commandText = message.substr(1)
-    interpretCommand(commandText,adminNick)
+    interpretCommand(commandText, adminNick)
     res.send ""
     return
 
-  if slack.userInfoById(req.body.user_id)
-    profile = slack.userInfoById(req.body.user_id)['profile']
+  if slack_utils.userInfoById(req.body.user_id)
+    profile = slack_utils.userInfoById(req.body.user_id)['profile']
     avatar = profile['image_72']
     avatar192 = profile['image_192']
     if process.env.ADMIN_NICK == "full"
-      adminNick = slack.userInfoById(req.body.user_id)['profile']['real_name']
+      adminNick = slack_utils.userInfoById(req.body.user_id)['profile']['real_name']
   else
     avatar = "images/default_admin.png"
 
@@ -151,7 +166,6 @@ app.post "/webhook", (req, res) ->
   res.send ""
 
 
-
 # Broadcast the chat message to all connected clients,
 # including the one who made the request
 # also send it to slack
@@ -161,13 +175,16 @@ app.io.route 'chat:msg', (req)->
   return if typeof req.data.message != "string"
 
   delete req.data.invalidNick
-  req.data.admin = 0    # Indicates that the message is not sent by a team member
-  req.data.online = 0   # Online status of end user is not tracked, always set to 0
-  req.data.timestamp = (new Date).toISOString()   # Current Time
+  req.data.admin = 0 # Indicates that the message is not sent by a team member
+  req.data.online = 0 # Online status of end user is not tracked, always set to 0
+  req.data.timestamp = (new Date).toISOString() # Current Time
   if !req.data.avatar
     req.data.avatar = process.env.BASE_URL + "/images/default_user.png"
   # If RESERVED_NICKS_URL doesn't exist => userVerifier = ""
-  status = if !!(userVerifier) then userVerifier.verify req.data.nick, req.cookies['connect.sid'] else {"nick": true, "session": true}
+  status = if req.cookies && !!(userVerifier) then userVerifier.verify req.data.nick, req.cookies['connect.sid'] else {
+    "nick": true,
+    "session": true
+  }
   storeMsg = true
 
   slackChannel = process.env.SLACK_CHANNEL
@@ -180,28 +197,28 @@ app.io.route 'chat:msg', (req)->
     req.io.emit 'chat:msg', req.data
     return
 
-  # If the session is banned
+# If the session is banned
   else if !status['session']
     req.io.emit 'chat:msg', req.data
     slackChannel = process.env.BANNED_CHANNEL
     storeMsg = false
 
-  # If the message is private
+# If the message is private
   else if req.data.message[0] == '!'
     req.io.emit 'chat:msg', req.data
     storeMsg = false
 
   else
-    # Send the message to all jinora users
+# Send the message to all jinora users
     app.io.broadcast 'chat:msg', req.data
 
   # Send message to slack
   # If we were given a valid avatar
   if req.data.avatar
     icon = req.data.avatar
-    slack.postMessage originalMsg, slackChannel, req.data.nick, icon
+    slack_utils.postMessage originalMsg, slackChannel, req.data.nick, icon
   else
-    slack.postMessage originalMsg, slackChannel, req.data.nick
+    slack_utils.postMessage originalMsg, slackChannel, req.data.nick
 
   # Store message in memory
   if storeMsg
@@ -216,7 +233,7 @@ app.io.route 'chat:demand', (req)->
 app.io.route 'member:connect', (req)->
   userInfoHandler.addUser req
   if connectNotify == "on"
-    slack.postMessage "#{req.data.nick} entered channel", process.env.SLACK_CHANNEL, "Jinora"
+    slack_utils.postMessage "#{req.data.nick} entered channel", process.env.SLACK_CHANNEL, "Jinora"
 
 app.io.route 'presence:demand', (req)->
   req.io.emit 'presence:list', onlineMemberList
@@ -228,12 +245,12 @@ app.io.on 'connection', (socket)->
   socket.on 'disconnect', ()->
     nick = userInfoHandler.removeUser socket.id
     if connectNotify == "on"
-      slack.postMessage "#{nick} left channel", process.env.SLACK_CHANNEL, "Jinora"
+      slack_utils.postMessage "#{nick} left channel", process.env.SLACK_CHANNEL, "Jinora"
 
 presence.on 'change', ()->
   onlineMemberList = []
   for username in presence.online()
-    userInfo = slack.userInfoByName(username)
+    userInfo = slack_utils.userInfoByName(username)
     if userInfo
       if !!userInfo.is_bot    # Continue for loop in case is_bot is true. '!!'' take care of case when is_bot is undefined
         continue

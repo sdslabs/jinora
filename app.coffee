@@ -181,14 +181,14 @@ app.io.route 'chat:msg', (req)->
   return if typeof req.data.message != "string"
 
   delete req.data.invalidNick
+  console.log "aviral",req
   req.data.admin = 0 # Indicates that the message is not sent by a team member
   req.data.online = 0 # Online status of end user is not tracked, always set to 0
   req.data.timestamp = (new Date).toISOString() # Current Time
-  publicIp = req.headers['x-forwarded-for']
   if !req.data.avatar
     req.data.avatar = process.env.BASE_URL + "/images/default_user.png"
   # If RESERVED_NICKS_URL doesn't exist => userVerifier = ""
-  status = if req.cookies && !!(userVerifier) then userVerifier.verify req.data.nick, req.cookies['connect.sid'], userInfoHandler.fetchOnlineUsers() else {
+  status = if req.cookies && !!(userVerifier) then userVerifier.verify req.data.nick, req.cookies['connect.sid'], userInfoHandler.fetchOnlineUsers(), req.sessionID else {
     "nick": true,
     "session": true
   }

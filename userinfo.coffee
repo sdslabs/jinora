@@ -6,8 +6,10 @@ module.exports = (ioObject, slackObject, setConnectNotify) ->
   users = {}
 
   addUser: (req) ->
+    nickname = if req.data.nick then req.data.nick.toLowerCase() else "anonymous"
     user =
-      nick: req.data.nick
+      nick: nickname
+      sessionId: req.sessionID.toLowerCase()
       platform: platform.parse(req.headers['user-agent'])
       ip:
         public: req.headers['x-forwarded-for']
@@ -27,14 +29,13 @@ module.exports = (ioObject, slackObject, setConnectNotify) ->
   getOnlineUsers: ()->
     onlineUsers = []
     for id, user of users
-      onlineUsers.push user.nick+":"+user.ip.public
+      onlineUsers.push user.nick+":"+user.sessionId+":"+user.ip.public
     onlineUsers
   
   fetchOnlineUsers: ()->
     u = {}
     for id, user of users
-      u[user.nick] = user.ip.public
-    console.log u
+      u[user.sessionId] = user.ip.public
     return u
 
   interpret: (message) ->

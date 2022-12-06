@@ -83,8 +83,8 @@ verifyUser = (sessionId) ->
   return !!sessionId and if sessionId in bannedSessions then false else true
 
 # Verify the ip of user
-verifyIp = (nick, onlineUsers) ->
-  return if onlineUsers[nick] in bannedIps then false else true
+verifyIp = (sessionId, onlineUsers) ->
+  return if onlineUsers[sessionId] in bannedIps then false else true
 
 banFunction = {
   nick: {
@@ -150,7 +150,6 @@ banFunction = {
           msg.cmdStatus = true
           msg.message = makeSlackMessage()
           slack.postMessage msg.message, process.env.SLACK_CHANNEL, "Jinora"
-
           return true
       return !!add and unbanned()
   }
@@ -163,13 +162,13 @@ module.exports = (slackObject) ->
 
   return {
     # Verify and return the auth status
-    verify: (nick, sessionId, onlineUsers) ->
+    verify: (nick, sessionId, onlineUsers, sid) ->
       nick = (nick or "").toLowerCase()
       nickSessionMap[nick] = sessionId
       status = {}
       status['nick'] = verifyNick(nick)
       status['session'] = verifyUser(sessionId)
-      status['ip'] = verifyIp(nick, onlineUsers)
+      status['ip'] = verifyIp(sid.toLowerCase(), onlineUsers)
       return status
 
     # Intepret private messages from slack to jinora and send a message to slack accordingly
@@ -188,7 +187,12 @@ module.exports = (slackObject) ->
         if words[1] in types
           msg.type = words[1]
           if msg.type == "ip"
+            console.log onlineUsers
+            console.log msg.userNick
+            console.log words
+            console.log words[2..]
             msg.userNick = onlineUsers[msg.userNick]
+          console.log msg.userNick
           msg.cmdStatus = eval("banFunction.#{msg.type}.#{words[0]}")(msg.userNick) || "error"
       if msg.cmdStatus != true
         msg.message = makeSlackMessage()

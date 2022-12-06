@@ -29,7 +29,7 @@ module.exports = (ioObject, slackObject, setConnectNotify) ->
   getOnlineUsers: ()->
     onlineUsers = []
     for id, user of users
-      onlineUsers.push user.nick+":"+user.sessionId+":"+user.ip.public
+      onlineUsers.push "nick:"+user.nick+"\nsessionid:"+user.sessionId+"\npublicip:"+user.ip.public
     onlineUsers
   
   fetchOnlineUsers: ()->

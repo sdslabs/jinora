@@ -115,8 +115,10 @@ interpretCommand = (commandText, adminNick) ->
   else if firstWord is "lastusers"
     msg = ""
     for i in [0,Math.min(10,senders_count)]
-      msg += senders.get(senders_count-1-i)
-      msg += ","
+      details = senders.get(senders_count-1-i)
+      if details
+        msg += details['nick']+":"+details['sid']
+        msg += "\n"
     slack_utils.postMessage msg, process.env.SLACK_CHANNEL, 'Jinora'
   else if firstWord is "users"
     msg = userInfoHandler.getOnlineUsers().join ', '
@@ -181,7 +183,6 @@ app.io.route 'chat:msg', (req)->
   return if typeof req.data.message != "string"
 
   delete req.data.invalidNick
-  console.log "aviral",req
   req.data.admin = 0 # Indicates that the message is not sent by a team member
   req.data.online = 0 # Online status of end user is not tracked, always set to 0
   req.data.timestamp = (new Date).toISOString() # Current Time
@@ -197,8 +198,7 @@ app.io.route 'chat:msg', (req)->
   slackChannel = process.env.SLACK_CHANNEL
   originalMsg = req.data.message
   req.data.message = sanitizeMessage originalMsg
-  nickname = req.data.nick
-  senders.push nickname
+  senders.push {"nick":req.data.nick,"sid":req.sessionID.toLowerCase()}
   senders_count += 1
   # If the nick is reserved
   if !status['nick']

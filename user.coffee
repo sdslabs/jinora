@@ -187,12 +187,7 @@ module.exports = (slackObject) ->
         if words[1] in types
           msg.type = words[1]
           if msg.type == "ip"
-            console.log onlineUsers
-            console.log msg.userNick
-            console.log words
-            console.log words[2..]
             msg.userNick = onlineUsers[msg.userNick]
-          console.log msg.userNick
           msg.cmdStatus = eval("banFunction.#{msg.type}.#{words[0]}")(msg.userNick) || "error"
       if msg.cmdStatus != true
         msg.message = makeSlackMessage()

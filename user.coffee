@@ -23,8 +23,9 @@ getJsonBlob = () ->
   }
   callback = (error, response, body) ->
     if !error and response.statusCode == 200
-      res = JSON.parse body ;
+      res = JSON.parse body
       reservedNicks = res.nicks || []
+      console.log reservedNicks
 
   return request options, callback
 
@@ -88,7 +89,6 @@ banFunction = {
         reservedNicks.push nick
         updateJsonBlob()
         return true
-        
       return !!nick and (verifyNick(nick) and banned())
 
     unban: (nick) ->
@@ -142,7 +142,7 @@ module.exports = (slackObject) ->
       status = {}
       status['nick'] = verifyNick(nick)
       status['session'] = verifyUser(sessionId)
-
+      console.log status
       return status
 
     # Intepret private messages from slack to jinora and send a message to slack accordingly

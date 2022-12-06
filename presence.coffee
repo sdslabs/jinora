@@ -64,7 +64,7 @@ presence.on 'ready', ()->
 
 module.exports = (token) ->
 #First call the presence.start method of Slack API
-  slack.rtm.start ({token: token, batch_presence_aware: 1})
+  slack.rtm.connect ({token: token, batch_presence_aware: 1})
     .then (res) ->
       #This is the initial response data with a lot of interesting keys
       #So we store it as well
@@ -77,7 +77,7 @@ module.exports = (token) ->
         presence.emit 'connect'
       ws.on 'error', (err)->
         presence.emit 'error', err
-      presence.on 'ready', () ->
-        ws.send getPresenceSubscriptionJson res.users
+      # presence.on 'ready', () ->
+      #   ws.send getPresenceSubscriptionJson res.users
   #Return the eventemitter
   return presence

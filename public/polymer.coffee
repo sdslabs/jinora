@@ -19,6 +19,15 @@ notificationTitle = ""
 pendingNotifications = 0
 
 ################## login screen #################
+verifyNickname = (nick) ->
+  for i in [0..nick.length-1]
+    console.log "hereee"
+    code = nick.charCodeAt(i)
+    if (!(code > 47 && code < 58) && // numeric (0-9)
+        !(code > 64 && code < 91) && // upper alpha (A-Z)
+        !(code > 96 && code < 123)) { // lower alpha (a-z)
+      return false;
+  return true
 
 $('.getinput').keydown (event) ->
   if event.keyCode == 13
@@ -27,6 +36,12 @@ $('.getinput').keydown (event) ->
     name = $('.getinput').val()
     if name == '' or name == null
       name = defaultNames[Math.floor(Math.random() * defaultNames.length)]
+    if(!verifyNickname name)
+      setTimeout () ->
+      msg.nick = template.userName = prompt('Sorry! You can\'t have this username.\nPlease enter another username using only alphanumeric characters', defaultName) or defaultName
+      sendMessage msg.message
+    , 1
+      return
     template.userName = name
     template.avatar = "https://raw.githubusercontent.com/Ashwinvalento/cartoon-avatar/master/lib/images/male/" +  (name.charCodeAt(0) % 100 + 1) + ".png"
     $('.loginscreen h1').append ' ' + name
@@ -150,7 +165,7 @@ socket.on 'chat:msg', (msg)->
   defaultName = defaultNames[(Math.random() * defaultNames.length) >>> 0]
   if msg.invalidNick
     setTimeout () ->
-      msg.nick = template.userName = prompt('Sorry! You can\'t have this username.\nPlease enter another username', defaultName) or defaultName
+      msg.nick = template.userName = prompt('Sorry! You can\'t have this username.\nPlease enter another username using only alphanumeric characters', defaultName) or defaultName
       sendMessage msg.message
     , 1
   else

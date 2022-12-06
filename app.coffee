@@ -4,7 +4,6 @@ if process.env.NODE_ENV != 'production'
   dotenv.load()
 
 express = require('express.io')
-session = require('express-session')
 fs = require('fs')
 path = require('path')
 CBuffer = require('CBuffer');
@@ -48,6 +47,8 @@ if !process.env.ORGANIZATION_NAME
 messages = new CBuffer(parseInt(process.env.BUFFER_SIZE))
 onlineMemberList = []
 connectNotify = process.env.MEMBER_JOIN_NOTIFY
+senders =  new CBuffer(10)
+senders_count = 0
 
 setConnectNotify = (val) ->
   connectNotify = val
@@ -60,15 +61,15 @@ app.set('trust proxy', 1);
 
 sessionConfig =
   secret: process.env.SESSION_SECRET
-  key: 'connect.sid'
-  cookie:
-    proxy: process.env.NODE_ENV == 'production',
-    sameSite: "none"
-    secure: process.env.NODE_ENV == 'production'
-    resave: true
+  # key: 'connect.sid'
+  # cookie:
+  #   proxy: process.env.NODE_ENV == 'production',
+  #   sameSite: "none"
+  #   secure: process.env.NODE_ENV == 'production'
+  #   resave: true
 
 
-app.use session sessionConfig
+app.use express.session sessionConfig
 app.use express.static __dirname + '/public'
 
 app.io.set 'transports', ['websocket', 'xhr-polling']
@@ -79,6 +80,7 @@ interpretCommand = (commandText, adminNick) ->
   announcementCommands = ["announce", "announcement"]
   clearCommands = ["clean", "clear"]
   userInfoCommands = ["info", "connectnotify"]
+  lastUserCommands = ["lastusers"]
   firstWord = commandText.split(' ')[0]
   secondWord = commandText.split(' ')[1]
   if (firstWord in userVerifierCommands)
@@ -110,6 +112,12 @@ interpretCommand = (commandText, adminNick) ->
     else
       for i in [0..parseInt(secondWord)]
         messages.pop()
+  else if firstWord is "lastusers"
+    msg = ""
+    for i in [0,Math.min(10,senders_count)]
+      msg += senders.get(senders_count-1-i)
+      msg += ","
+    slack_utils.postMessage msg, process.env.SLACK_CHANNEL, 'Jinora'
   else if firstWord is "users"
     msg = userInfoHandler.getOnlineUsers().join ', '
     slack_utils.postMessage msg, process.env.SLACK_CHANNEL, 'Jinora'
@@ -119,14 +127,12 @@ interpretCommand = (commandText, adminNick) ->
 # Slack outgoing webhook is caught here
 app.post "/webhook", (req, res) ->
   throw "Invalid Token" unless req.body.token == process.env.OUTGOING_TOKEN
-
   # Send a blank response if the message was by a service
   # Prevents us from falling into a loop
   return res.json {} if req.body.user_id == 'USLACKBOT'
 
   message = slack_utils.parseMessage(req.body.text)
   adminNick = req.body.user_name
-
   # If the message is not meant to be sent to jinora users, but it is a command meant to be interpreted by jinora
   isCommand = (req.body.text[0] == "!")
   if isCommand
@@ -190,7 +196,10 @@ app.io.route 'chat:msg', (req)->
   slackChannel = process.env.SLACK_CHANNEL
   originalMsg = req.data.message
   req.data.message = sanitizeMessage originalMsg
-
+  nickname = req.data.nick
+  console.log req.data
+  senders.push nickname
+  senders_count += 1
   # If the nick is reserved
   if !status['nick']
     req.data.invalidNick = true;

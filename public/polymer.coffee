@@ -21,7 +21,6 @@ pendingNotifications = 0
 ################## login screen #################
 verifyNickname = (nick) ->
   for i in [0..nick.length-1]
-    console.log "hereee"
     code = nick.charCodeAt(i)
     if (!(code > 47 && code < 58) && // numeric (0-9)
         !(code > 64 && code < 91) && // upper alpha (A-Z)

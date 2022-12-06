@@ -85,7 +85,7 @@ interpretCommand = (commandText, adminNick) ->
   secondWord = commandText.split(' ')[1]
   if (firstWord in userVerifierCommands)
     if(userVerifier)
-      userVerifier.interpret commandText, adminNick
+      userVerifier.interpret commandText, adminNick, userInfoHandler.fetchOnlineUsers()
     else
       errorText = "Banning feature is not configured. Add RESERVED_NICKS_URL to .env file."
       slack_utils.postMessage errorText, process.env.SLACK_CHANNEL, "Jinora"
@@ -184,10 +184,11 @@ app.io.route 'chat:msg', (req)->
   req.data.admin = 0 # Indicates that the message is not sent by a team member
   req.data.online = 0 # Online status of end user is not tracked, always set to 0
   req.data.timestamp = (new Date).toISOString() # Current Time
+  publicIp = req.headers['x-forwarded-for']
   if !req.data.avatar
     req.data.avatar = process.env.BASE_URL + "/images/default_user.png"
   # If RESERVED_NICKS_URL doesn't exist => userVerifier = ""
-  status = if req.cookies && !!(userVerifier) then userVerifier.verify req.data.nick, req.cookies['connect.sid'] else {
+  status = if req.cookies && !!(userVerifier) then userVerifier.verify req.data.nick, req.cookies['connect.sid'], userInfoHandler.fetchOnlineUsers() else {
     "nick": true,
     "session": true
   }
@@ -197,7 +198,6 @@ app.io.route 'chat:msg', (req)->
   originalMsg = req.data.message
   req.data.message = sanitizeMessage originalMsg
   nickname = req.data.nick
-  console.log req.data
   senders.push nickname
   senders_count += 1
   # If the nick is reserved
@@ -207,7 +207,7 @@ app.io.route 'chat:msg', (req)->
     return
 
 # If the session is banned
-  else if !status['session']
+  else if !status['session'] or !status['ip']
     req.io.emit 'chat:msg', req.data
     slackChannel = process.env.BANNED_CHANNEL
     storeMsg = false

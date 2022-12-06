@@ -4,9 +4,11 @@ if process.env.NODE_ENV != 'production'
 
 request = require('request')
 
+
 slack = 
 msg = {}
 nickSessionMap = {}
+bannedIps = []
 bannedSessions = []
 HEADERS = {
   "Content-Type": "application/json",
@@ -25,7 +27,6 @@ getJsonBlob = () ->
     if !error and response.statusCode == 200
       res = JSON.parse body
       reservedNicks = res.nicks || []
-      console.log reservedNicks
 
   return request options, callback
 
@@ -81,6 +82,10 @@ verifyNick = (nick) ->
 verifyUser = (sessionId) ->
   return !!sessionId and if sessionId in bannedSessions then false else true
 
+# Verify the ip of user
+verifyIp = (nick, onlineUsers) ->
+  return if onlineUsers[nick] in bannedIps then false else true
+
 banFunction = {
   nick: {
     ban: (nick) ->
@@ -128,6 +133,28 @@ banFunction = {
       return !!nick and unbanned()
   }
 
+  ip : {
+    ban: (add) ->
+      banned = () ->
+        bannedIps.push add
+        msg.cmdStatus = true
+        msg.message = makeSlackMessage()
+        slack.postMessage msg.message, process.env.SLACK_CHANNEL, "Jinora"
+        return true
+      return !!add and banned()
+
+    unban: (add) ->
+      unbanned = () ->
+        if add in bannedIps
+          bannedIps.splice(bannedIps.indexOf(add), 1)
+          msg.cmdStatus = true
+          msg.message = makeSlackMessage()
+          slack.postMessage msg.message, process.env.SLACK_CHANNEL, "Jinora"
+
+          return true
+      return !!add and unbanned()
+  }
+
 }
 
 module.exports = (slackObject) ->
@@ -136,23 +163,23 @@ module.exports = (slackObject) ->
 
   return {
     # Verify and return the auth status
-    verify: (nick, sessionId) ->
+    verify: (nick, sessionId, onlineUsers) ->
       nick = (nick or "").toLowerCase()
       nickSessionMap[nick] = sessionId
       status = {}
       status['nick'] = verifyNick(nick)
       status['session'] = verifyUser(sessionId)
-      console.log status
+      status['ip'] = verifyIp(nick, onlineUsers)
       return status
 
     # Intepret private messages from slack to jinora and send a message to slack accordingly
-    interpret: (message, adminNick) ->
+    interpret: (message, adminNick, onlineUsers) ->
       msg.adminNick = adminNick
       msg.message = message.toLowerCase()
       msg.type = ""
       msg.cmdStatus = "invalid"
       words = msg.message.split(' ')
-      types = ["nick", "user"]
+      types = ["nick", "user", "ip"]
       bans = ["ban", "unban"]
       msg.banStatus = bans
       if words[0] in bans
@@ -160,8 +187,9 @@ module.exports = (slackObject) ->
         msg.userNick = words[2..].join(" ") or ""
         if words[1] in types
           msg.type = words[1]
+          if msg.type == "ip"
+            msg.userNick = onlineUsers[msg.userNick]
           msg.cmdStatus = eval("banFunction.#{msg.type}.#{words[0]}")(msg.userNick) || "error"
-
       if msg.cmdStatus != true
         msg.message = makeSlackMessage()
         slack.postMessage msg.message, process.env.SLACK_CHANNEL, "Jinora"

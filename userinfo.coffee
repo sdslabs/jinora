@@ -27,8 +27,15 @@ module.exports = (ioObject, slackObject, setConnectNotify) ->
   getOnlineUsers: ()->
     onlineUsers = []
     for id, user of users
-      onlineUsers.push user.nick
+      onlineUsers.push user.nick+":"+user.ip.public
     onlineUsers
+  
+  fetchOnlineUsers: ()->
+    u = {}
+    for id, user of users
+      u[user.nick] = user.ip.public
+    console.log u
+    return u
 
   interpret: (message) ->
     index = message.indexOf(' ')
